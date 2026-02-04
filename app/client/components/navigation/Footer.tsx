@@ -17,7 +17,7 @@ export default function Footer() {
   // Keep the same layout/card structure, but render non-navigating placeholders.
   const categories: ToolCategory[] = [
     {
-      title: "Explore paycheck tools",
+      title: "Explore coverage tools",
       cardClassName: "lg:col-span-2",
       listClassName: "grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1",
       items: [],
@@ -30,10 +30,10 @@ export default function Footer() {
         <div className="rounded-2xl border border-sky-900/60 bg-sky-950/30 p-6">
           <div className="flex items-start justify-between gap-3">
             <h2 className="text-base font-bold text-white">
-              PaycheckConverter.com
+              coveragecalculators.com
             </h2>
             <span className="text-base text-slate-400">
-              Take-home paycheck estimates
+              Coverage and area calculators
             </span>
           </div>
 
@@ -129,16 +129,15 @@ export default function Footer() {
           </nav>
 
           <p className="text-base text-slate-400">
-            © {year} paycheckconverter.com • All rights reserved.
+            © {year} coveragecalculators.com • All rights reserved.
           </p>
 
           <p className="text-sm text-slate-400/90">
             Tools on this site are for informational, planning, and comparison
             purposes only. Results are estimates based on your inputs and the
-            assumptions shown. This website does not provide financial, legal,
-            or tax advice. Always confirm compensation terms, policies, and
-            payroll practices in your offer letter, contract, or employer
-            documentation.
+            assumptions shown. This website does not provide professional,
+            legal, or engineering advice. Always confirm specifications and
+            requirements for your specific material and project.
           </p>
         </div>
       </div>

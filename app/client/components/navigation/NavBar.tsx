@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import logo from "../../assets/images/paycheck-calculator-logo-final_minified.png";
+import logo from "../../assets/images/coverage-calculator-logo-minified.png";
 
 export default function NavBar() {
   return (
@@ -10,21 +10,21 @@ export default function NavBar() {
           <Link
             to="/"
             className="group flex items-center gap-3 cursor-pointer"
-            aria-label="paycheckconverter home"
+            aria-label="coveragecalculators home"
           >
             <img
               src={logo}
-              alt="paycheckconverter"
+              alt="coveragecalculators"
               className="h-10 w-10 sm:h-11 sm:w-11 object-contain"
               loading="eager"
               decoding="async"
             />
             <div className="text-left leading-tight">
               <div className="text-base font-bold text-white tracking-tight group-hover:text-sky-200">
-                PaycheckConverter<span className="text-sky-300">.com</span>
+                coveragecalculators<span className="text-sky-300">.com</span>
               </div>
               <div className="text-xs text-sky-200 font-semibold">
-                Take-home pay per paycheck
+                Coverage and area calculators
               </div>
             </div>
           </Link>

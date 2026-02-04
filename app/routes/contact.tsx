@@ -6,7 +6,7 @@ export const meta: Route.MetaFunction = () => [
   {
     name: "description",
     content:
-      "Contact coveragecalculators.com for feedback, corrections, or questions about our paycheck conversion and take-home pay calculators, assumptions, and results.",
+      "Contact coveragecalculators.com for feedback, corrections, or questions about our coverage and area calculators, assumptions, and results.",
   },
   { name: "robots", content: "index,follow" },
   {
@@ -21,9 +21,12 @@ export const meta: Route.MetaFunction = () => [
   {
     property: "og:description",
     content:
-      "Send feedback, corrections, or questions about our paycheck conversion and take-home pay calculators, assumptions, and results.",
+      "Send feedback, corrections, or questions about our coverage and area calculators, assumptions, and results.",
   },
-  { property: "og:url", content: "https://www.coveragecalculators.com/contact" },
+  {
+    property: "og:url",
+    content: "https://www.coveragecalculators.com/contact",
+  },
   { property: "og:site_name", content: "coveragecalculators.com" },
 
   // Twitter
@@ -32,7 +35,7 @@ export const meta: Route.MetaFunction = () => [
   {
     name: "twitter:description",
     content:
-      "Send feedback, corrections, or questions about our paycheck conversion and take-home pay calculators, assumptions, and results.",
+      "Send feedback, corrections, or questions about our coverage and area calculators, assumptions, and results.",
   },
 ];
 
@@ -83,8 +86,9 @@ export default function Contact() {
 
           <p className="mt-4 text-slate-700 text-center max-w-2xl mx-auto leading-relaxed">
             This page is for feedback and corrections. If something looks off in
-            a result, include the pay amount, the source period, your pay
-            frequency, and any assumptions you used.
+            a result, include the area you entered, the from and to units, and
+            any coverage rate, coats, or waste settings you used (if
+            applicable).
           </p>
 
           <div className="mt-10 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm max-w-2xl mx-auto">
@@ -107,9 +111,10 @@ export default function Contact() {
                 What to include
               </h3>
               <ul className="mt-2 list-disc ml-5 text-sm text-slate-700 space-y-1 leading-relaxed">
-                <li>Pay amount and currency</li>
-                <li>From period and to period</li>
-                <li>Pay frequency (weekly, biweekly, etc.)</li>
+                <li>Area value and the unit you used</li>
+                <li>From unit and to unit</li>
+                <li>Coverage rate and its area unit (if using the estimate)</li>
+                <li>Coats and waste % (if using the estimate)</li>
                 <li>Your expected result (and why)</li>
                 <li>A screenshot or URL of the page (optional)</li>
               </ul>
@@ -118,10 +123,11 @@ export default function Contact() {
             <div className="mt-8 border-t border-slate-200 pt-6">
               <h3 className="text-sm font-semibold text-slate-900">Notes</h3>
               <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                coveragecalculators.com provides planning and comparison math
-                based on your inputs and the assumptions shown on the page.
-                Results do not model employer-specific payroll calendars, tax
-                tables, or jurisdiction logic unless a tool explicitly says it
+                coveragecalculators.com provides math-only conversions and
+                estimates based on your inputs and the assumptions shown on the
+                page. Results do not account for product-specific instructions,
+                surface conditions, application technique, compaction, depth
+                targets, or local requirements unless a tool explicitly says it
                 does.
               </p>
             </div>
@@ -130,9 +136,9 @@ export default function Contact() {
           <p className="mt-10 text-xs text-slate-600 text-center leading-relaxed">
             Tools on this site are for informational, planning, and comparison
             purposes only. Results are estimates based on your inputs and the
-            assumptions shown. This website does not provide financial, legal,
-            or tax advice. Always confirm compensation terms, schedules, and
-            policies in your offer letter, contract, or employer documentation.
+            assumptions shown. This website does not provide professional,
+            legal, or engineering advice. Always confirm specifications and
+            requirements for your specific material and project.
           </p>
         </div>
       </section>
