@@ -13,10 +13,10 @@ export const meta: Route.MetaFunction = () => [
   {
     name: "keywords",
     content:
-      "coverage calculator, area converter, paint coverage calculator, mulch coverage calculator, soil coverage calculator, gravel coverage calculator, concrete coverage calculator, square feet to square meters, square meters to square feet, acres to square feet, hectares to square meters, material estimator, coats calculator, waste factor",
+      "coverage calculator, area calculator, paint coverage calculator, mulch coverage calculator, soil coverage calculator, gravel coverage calculator, concrete coverage calculator, square feet to square meters, square meters to square feet, acres to square feet, hectares to square meters, material estimator, coats calculator, waste factor",
   },
   { name: "robots", content: "index,follow" },
-  { name: "author", content: "CoverageConverters.com" },
+  { name: "author", content: "coveragecalculators.com" },
   { name: "theme-color", content: "#f8fafc" },
 
   // Open Graph
@@ -30,11 +30,11 @@ export const meta: Route.MetaFunction = () => [
     content:
       "Convert area units and estimate material needs with exact decimals and transparent math for paint and bulk materials.",
   },
-  { property: "og:url", content: "https://www.coverageconverters.com" },
-  { property: "og:site_name", content: "CoverageConverters.com" },
+  { property: "og:url", content: "https://www.coveragecalculators.com" },
+  { property: "og:site_name", content: "coveragecalculators.com" },
   {
     property: "og:image",
-    content: "https://www.coverageconverters.com/og-image.jpg",
+    content: "https://www.coveragecalculators.com/og-image.jpg",
   },
 
   // Twitter
@@ -50,12 +50,12 @@ export const meta: Route.MetaFunction = () => [
   },
   {
     name: "twitter:image",
-    content: "https://www.coverageconverters.com/og-image.jpg",
+    content: "https://www.coveragecalculators.com/og-image.jpg",
   },
   {
     tagName: "link",
     rel: "canonical",
-    href: "https://www.coverageconverters.com",
+    href: "https://www.coveragecalculators.com",
   },
 ];
 
@@ -821,7 +821,7 @@ export default function Home() {
       a: "Coverage is how much area a given amount of material can cover. For example, paint might cover 350 ft² per gallon, or mulch might be planned as a depth that implies a volume calculation. This page focuses on area conversions and a simple area-per-unit estimate.",
     },
     {
-      q: "What does the area converter do?",
+      q: "What does the area calculator do?",
       a: "It converts the same area between common units like ft², m², acres, and hectares using exact unit definitions (for example, 1 inch = 0.0254 meters exactly).",
     },
     {
@@ -855,8 +855,8 @@ export default function Home() {
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "CoverageConverters.com",
-    url: "https://www.coverageconverters.com",
+    name: "coveragecalculators.com",
+    url: "https://www.coveragecalculators.com",
   };
 
   const webPageSchema = {
@@ -865,7 +865,7 @@ export default function Home() {
     name: "Coverage Calculator: Area + Material Estimate",
     description:
       "Convert area units and estimate material coverage for paint and bulk materials with decimal-safe input and clear assumptions.",
-    url: "https://www.coverageconverters.com",
+    url: "https://www.coveragecalculators.com",
   };
 
   const convertSummaryLine = useMemo(() => {
@@ -928,7 +928,7 @@ export default function Home() {
             @media print {
               a[href]:after { content: ""; }
               #top-links, #bottom-nav, #export-controls { display: none !important; }
-              #converter { padding-bottom: 0 !important; }
+              #calculator { padding-bottom: 0 !important; }
               .shadow-sm { box-shadow: none !important; }
               body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             }
@@ -937,7 +937,7 @@ export default function Home() {
       />
 
       <section
-        id="converter"
+        id="calculator"
         className="mx-auto max-w-6xl px-6 pb-8 mt-4 sm:mt-6 sm:pb-12"
       >
         <div className="rounded-2xl bg-white sm:shadow-sm sm:border border-slate-200 sm:px-8">
@@ -1431,7 +1431,7 @@ export default function Home() {
                   <div className="mt-4 space-y-3">
                     <p>
                       This page is built for quick, practical estimating. You
-                      can use it as a pure area converter or as a material
+                      can use it as a pure area calculator or as a material
                       quantity estimator. The top controls convert your area
                       between units for measurement and planning. The optional
                       coverage panel uses a coverage rate (area per unit) to
