@@ -1,34 +1,45 @@
 import { useMemo, useEffect, useState } from "react";
 import type { Route } from "./+types/home";
+import HowItWorks from "~/client/components/home/HowItWorks";
+import FAQ from "~/client/components/home/FAQ";
+import ToolFit from "~/client/components/home/ToolFit";
 
 export const meta: Route.MetaFunction = () => [
+  // Title: lead with the user’s job-to-be-done, then add keywords
   {
-    title: "Coverage Calculator (Area, Paint, Mulch, Soil, Gravel, Concrete)",
+    title:
+      "How Much Do I Need? Coverage Calculator for Paint, Mulch, Gravel, Soil + Area Converter",
   },
+
+  // Description: plain-English outcome, then features (coverage rate, coats, waste, conversions)
   {
     name: "description",
     content:
-      "Convert area units and estimate material coverage for paint, mulch, soil, gravel, concrete, and more. Exact decimals, transparent math, and clear assumptions.",
+      "Need to know how much paint, mulch, soil, gravel, or concrete to buy? Convert area (ft², m², yd², acres) and estimate quantity using a coverage rate, coats, and waste.",
   },
+
+  // Keywords: keep relevant; don’t overstuff
   {
     name: "keywords",
     content:
-      "coverage calculator, area calculator, paint coverage calculator, mulch coverage calculator, soil coverage calculator, gravel coverage calculator, concrete coverage calculator, square feet to square meters, square meters to square feet, acres to square feet, hectares to square meters, material estimator, coats calculator, waste factor",
+      "coverage calculator, how much paint do I need, paint coverage calculator, mulch calculator, gravel calculator, soil calculator, concrete calculator, area converter, square feet to square meters, square meters to square feet, acres to square feet, hectares to square meters, coats calculator, waste percentage",
   },
+
   { name: "robots", content: "index,follow" },
   { name: "author", content: "coveragecalculators.com" },
   { name: "theme-color", content: "#f8fafc" },
 
-  // Open Graph
+  // Open Graph (social shares)
   { property: "og:type", content: "website" },
   {
     property: "og:title",
-    content: "Coverage Calculator (Area, Paint, Mulch, Soil, Gravel, Concrete)",
+    content:
+      "How Much Do I Need? Coverage Calculator (Paint, Mulch, Gravel, Soil) + Area Converter",
   },
   {
     property: "og:description",
     content:
-      "Convert area units and estimate material needs with exact decimals and transparent math for paint and bulk materials.",
+      "Convert area units and estimate how much material to buy using a coverage rate. Includes coats and waste for planning paint and bulk projects.",
   },
   { property: "og:url", content: "https://www.coveragecalculators.com" },
   { property: "og:site_name", content: "coveragecalculators.com" },
@@ -41,17 +52,19 @@ export const meta: Route.MetaFunction = () => [
   { name: "twitter:card", content: "summary_large_image" },
   {
     name: "twitter:title",
-    content: "Coverage Calculator (Area + Material Estimator)",
+    content: "How Much Do I Need? Coverage Calculator + Area Converter",
   },
   {
     name: "twitter:description",
     content:
-      "Convert area units and estimate coverage with clear assumptions and exact decimals.",
+      "Estimate paint, mulch, soil, gravel, or concrete from a coverage rate. Converts ft², m², yd², acres, and more. Includes coats and waste.",
   },
   {
     name: "twitter:image",
     content: "https://www.coveragecalculators.com/og-image.jpg",
   },
+
+  // Canonical
   {
     tagName: "link",
     rel: "canonical",
@@ -335,7 +348,7 @@ function parseMoneyToScaled(input: string): {
     return {
       ok: false,
       error:
-        "That value is extremely large. Please enter a smaller area value (under 1,000,000,000).",
+        "That value is very large and may be impractical to display. Try a smaller number or switch units (for example, acres or hectares).",
     };
   }
 
@@ -392,9 +405,70 @@ function formatMoneyFromDecimalString(
   _currency: string,
   opts: { minimumFractionDigits: number; maximumFractionDigits: number },
 ) {
-  // In this landing page, the "currency" selector represents output units.
-  // We keep grouped number formatting without converting to float.
+  // Here "currency" is actually the material unit selector.
+  // We keep consistent grouped formatting without converting to float.
   return formatGroupedDecimalString(decimalStr, opts);
+}
+
+/**
+ * Display helper: avoid misleading "0.00" when rounding would zero-out a non-zero value.
+ * Example: acres/hectares for small areas.
+ */
+function formatScaledForDisplay(
+  scaled: bigint,
+  opts: {
+    roundForDisplay: boolean;
+    displayDecimals: 0 | 2 | 4 | 6;
+    minFD: number;
+    maxFD: number;
+    allowLessThan: boolean;
+    currencyForFormatter: string;
+  },
+) {
+  const {
+    roundForDisplay,
+    displayDecimals,
+    minFD,
+    maxFD,
+    allowLessThan,
+    currencyForFormatter,
+  } = opts;
+
+  if (!roundForDisplay) {
+    const dec = scaledToDecimalString(scaled, 6, { trimTrailingZeros: true });
+    return formatMoneyFromDecimalString(dec, currencyForFormatter, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: Math.max(0, Math.min(12, maxFD)),
+    });
+  }
+
+  const roundedScaled = roundScaledToDigits(scaled, displayDecimals);
+
+  if (allowLessThan && roundedScaled === 0n && scaled !== 0n) {
+    const step = 10n ** BigInt(6 - displayDecimals);
+    const decStep = scaledToDecimalString(step, 6, {
+      fixed: displayDecimals > 0,
+    });
+    const prettyStep = formatMoneyFromDecimalString(
+      decStep,
+      currencyForFormatter,
+      {
+        minimumFractionDigits: displayDecimals,
+        maximumFractionDigits: displayDecimals,
+      },
+    );
+    return `< ${prettyStep}`;
+  }
+
+  const dec = scaledToDecimalString(roundedScaled, 6, {
+    fixed: displayDecimals > 0,
+    trimTrailingZeros: false,
+  });
+
+  return formatMoneyFromDecimalString(dec, currencyForFormatter, {
+    minimumFractionDigits: Math.max(0, Math.min(12, minFD)),
+    maximumFractionDigits: Math.max(0, Math.min(12, maxFD)),
+  });
 }
 
 const AREA_FACTOR_TO_SQM: Record<Period, Rational> = {
@@ -513,34 +587,51 @@ export default function Home() {
 
   const hasInput = useMemo(() => amount.trim().length > 0, [amount]);
 
-  const parsed = useMemo(() => {
-    const p = parseMoneyToScaled(amount);
-    return p;
-  }, [amount]);
+  const parsed = useMemo(() => parseMoneyToScaled(amount), [amount]);
 
   const hasCoverageRate = useMemo(
     () => coverageRate.trim().length > 0,
     [coverageRate],
   );
 
-  const rateParsed = useMemo(() => {
-    const p = parseMoneyToScaled(coverageRate);
-    return p;
-  }, [coverageRate]);
+  const rateParsed = useMemo(
+    () => parseMoneyToScaled(coverageRate),
+    [coverageRate],
+  );
 
   const coatsParsed = useMemo(() => {
     const raw = coats.trim();
     if (!raw) return { ok: false, value: 0 };
     const n = Number(raw);
     if (!Number.isFinite(n)) return { ok: false, value: 0 };
-    const i = Math.floor(n);
-    return i >= 1 ? { ok: true, value: i } : { ok: false, value: 0 };
+    if (!Number.isInteger(n) || n < 1) return { ok: false, value: 0 };
+    return { ok: true, value: n };
   }, [coats]);
 
-  const wasteParsed = useMemo(() => {
-    const p = parseMoneyToScaled(wastePct);
-    return p;
-  }, [wastePct]);
+  const wasteParsed = useMemo(() => parseMoneyToScaled(wastePct), [wastePct]);
+
+  const wasteWarning = useMemo(() => {
+    if (!hasCoverageRate) return null;
+    if (!wasteParsed.ok || wasteParsed.scaled === undefined) return null;
+
+    const w = wasteParsed.scaled; // percent scaled
+    const warn50 = 50n * SCALE;
+    const warn200 = 200n * SCALE;
+
+    if (w > warn200) {
+      return {
+        tone: "strong" as const,
+        text: "Very high waste percentage. This will massively inflate the estimate.",
+      };
+    }
+    if (w > warn50) {
+      return {
+        tone: "soft" as const,
+        text: "High waste percentage. Typical planning ranges are often around 5% to 15%.",
+      };
+    }
+    return null;
+  }, [hasCoverageRate, wasteParsed.ok, wasteParsed.scaled]);
 
   const validation = useMemo(() => {
     if (!hasInput)
@@ -584,7 +675,10 @@ export default function Home() {
       return { ok: false, message: "Coverage rate must be greater than 0." };
 
     if (!coatsParsed.ok)
-      return { ok: false, message: "Coats must be 1 or more." };
+      return {
+        ok: false,
+        message: "Coats must be a whole number (1 or more).",
+      };
 
     if (!wasteParsed.ok)
       return {
@@ -643,18 +737,14 @@ export default function Home() {
   const estimateDisplay = useMemo(() => {
     if (!estimateR) return "—";
     const scaled = toScaledUnits(estimateR);
-    const roundedScaled = roundForDisplay
-      ? roundScaledToDigits(scaled, displayDecimals)
-      : scaled;
 
-    const dec = scaledToDecimalString(roundedScaled, 6, {
-      fixed: roundForDisplay ? displayDecimals > 0 : false,
-      trimTrailingZeros: !roundForDisplay,
-    });
-
-    const num = formatMoneyFromDecimalString(dec, currency, {
-      minimumFractionDigits: roundForDisplay ? displayDecimals : 0,
-      maximumFractionDigits: roundForDisplay ? displayDecimals : 12,
+    const num = formatScaledForDisplay(scaled, {
+      roundForDisplay,
+      displayDecimals,
+      minFD: roundForDisplay ? displayDecimals : 0,
+      maxFD: roundForDisplay ? displayDecimals : 12,
+      allowLessThan: true,
+      currencyForFormatter: currency,
     });
 
     const unitLabel =
@@ -667,18 +757,13 @@ export default function Home() {
     if (!rawResultR) return "—";
     const scaled = toScaledUnits(rawResultR);
 
-    const roundedScaled = roundForDisplay
-      ? roundScaledToDigits(scaled, displayDecimals)
-      : scaled;
-
-    const dec = scaledToDecimalString(roundedScaled, 6, {
-      fixed: roundForDisplay ? displayDecimals > 0 : false,
-      trimTrailingZeros: !roundForDisplay,
-    });
-
-    return formatMoneyFromDecimalString(dec, currency, {
-      minimumFractionDigits: roundForDisplay ? displayDecimals : 0,
-      maximumFractionDigits: roundForDisplay ? displayDecimals : 12,
+    return formatScaledForDisplay(scaled, {
+      roundForDisplay,
+      displayDecimals,
+      minFD: roundForDisplay ? displayDecimals : 0,
+      maxFD: roundForDisplay ? displayDecimals : 12,
+      allowLessThan: true,
+      currencyForFormatter: currency,
     });
   }, [rawResultR, roundForDisplay, displayDecimals, currency]);
 
@@ -735,6 +820,13 @@ export default function Home() {
     return `Interpreting that as ${nice}.`;
   }, [validation.ok, parsed.ok, parsed.scaled, amount, currency]);
 
+  const coverageUnitNote = useMemo(() => {
+    if (!hasCoverageRate) return null;
+    if (!estimatorValidation.ok) return null;
+    if (coverageUnit === to) return null;
+    return `Note: your area is converted into ${PERIOD_LABEL[coverageUnit]} for the estimate.`;
+  }, [hasCoverageRate, estimatorValidation.ok, coverageUnit, to]);
+
   const breakdown = useMemo(() => {
     if (!amountR) {
       return {
@@ -771,18 +863,13 @@ export default function Home() {
     if (!r) return "—";
     const scaled = toScaledUnits(r);
 
-    const roundedScaled = roundForDisplay
-      ? roundScaledToDigits(scaled, displayDecimals)
-      : scaled;
-
-    const dec = scaledToDecimalString(roundedScaled, 6, {
-      fixed: roundForDisplay ? displayDecimals > 0 : false,
-      trimTrailingZeros: !roundForDisplay,
-    });
-
-    return formatMoneyFromDecimalString(dec, currency, {
-      minimumFractionDigits: roundForDisplay ? displayDecimals : 0,
-      maximumFractionDigits: roundForDisplay ? displayDecimals : 12,
+    return formatScaledForDisplay(scaled, {
+      roundForDisplay,
+      displayDecimals,
+      minFD: roundForDisplay ? displayDecimals : 0,
+      maxFD: roundForDisplay ? displayDecimals : 12,
+      allowLessThan: true,
+      currencyForFormatter: currency,
     });
   }
 
@@ -824,43 +911,6 @@ export default function Home() {
     }
   }, []);
 
-  const faqData = [
-    {
-      q: "What does “coverage” mean on this page?",
-      a: "Coverage is how much area a given amount of material can cover. For example, paint might cover 350 ft² per gallon, or mulch might be planned as a depth that implies a volume calculation. This page focuses on area conversions and a simple area-per-unit estimate.",
-    },
-    {
-      q: "What does the area calculator do?",
-      a: "It converts the same area between common units like ft², m², acres, and hectares using exact unit definitions (for example, 1 inch = 0.0254 meters exactly).",
-    },
-    {
-      q: "How does the material estimate work?",
-      a: "If you enter a coverage rate (area per unit), we estimate units needed as: (area ÷ coverage) × coats × (1 + waste%). This is a simple estimate and does not account for surface texture, compaction, overlap, or product-specific instructions.",
-    },
-    {
-      q: "Does the calculator preserve decimals?",
-      a: "Yes. We parse and compute using decimal-safe math (not floating point). Optional rounding is display-only and clearly labeled.",
-    },
-    {
-      q: "Can I save the results?",
-      a: "Yes. Your inputs and display settings are saved locally in your browser so you can come back later.",
-    },
-    {
-      q: "Is this good for paint, soil, mulch, gravel, and concrete?",
-      a: "It is useful for the area part of the estimate and for simple coverage rates. For depth-based materials (soil, mulch, gravel, concrete), you may still need a volume calculator based on thickness and material density.",
-    },
-  ];
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqData.map((f) => ({
-      "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
-    })),
-  };
-
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
@@ -898,1021 +948,422 @@ export default function Home() {
         }}
       />
 
-      <section
-        id="calculator"
-        className="mx-auto max-w-6xl px-6 pb-8 mt-4 sm:mt-6 sm:pb-12"
+   <section
+  id="calculator"
+  className="mx-auto max-w-6xl px-6 pb-8 sm:mt-6 sm:pb-12"
+>
+  <div className="rounded-2xl bg-white sm:shadow-sm sm:border border-slate-200 sm:px-8">
+    <div className="flex flex-col pt-2 sm:pt-4 pb-1 sm:flex-row sm:items-center sm:justify-between gap-4">
+      <h1 className="mb-1 text-center sm:text-left text-2xl sm:text-3xl md:text-4xl capitalize font-bold text-sky-800 tracking-tight">
+        Coverage Calculator
+      </h1>
+
+      <div
+        id="export-controls-desktop"
+        className=" hidden sm:flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between"
       >
-        <div className="rounded-2xl bg-white sm:shadow-sm sm:border border-slate-200 sm:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-center sm:text-left text-2xl sm:text-3xl md:text-4xl capitalize font-bold text-sky-800 tracking-tight">
-              Universal coverage calculator
-            </h1>
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => {
+              if (typeof window === "undefined") return;
+              window.print();
+            }}
+            className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-50 hover:border-sky-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7fbff]"
+          >
+            Print / Save PDF
+          </button>
+        </div>
+      </div>
+    </div>
 
-            <div
-              id="export-controls-desktop"
-              className="sm:mt-6 hidden sm:flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between"
-            >
-              <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (typeof window === "undefined") return;
-                    window.print();
-                  }}
-                  className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-50 hover:border-sky-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7fbff]"
-                >
-                  Print / Save PDF
-                </button>
-              </div>
-            </div>
-          </div>
+    <p className="hidden my-1 md:flex w-full text-left text-sm md:text-base text-slate-600 leading-relaxed">
+      Convert area units and estimate material needs using a coverage rate (paint,
+      mulch, soil, gravel, concrete) with coats and waste.
+    </p>
 
-          <p id={decimalsHelpId} className="sr-only">
-            Controls how many decimals to show when rounding is enabled.
-          </p>
+    <p id={decimalsHelpId} className="sr-only">
+      Controls how many decimals to show when rounding is enabled.
+    </p>
 
-          <div className="grid gap-y-3 gap-x-5 md:grid-cols-12">
-            <div className="md:col-span-5">
-              <label className="block text-sm font-semibold text-slate-800 mb-2">
-                Area
-              </label>
-              <div className="flex gap-2">
-                <input
-                  inputMode="decimal"
-                  value={inputGroupedDisplay}
-                  onFocus={() => setAmountFocused(true)}
-                  onBlur={() => setAmountFocused(false)}
-                  onChange={(e) => setAmount(e.target.value)}
-                  placeholder="e.g. 500 or 1250.50"
-                  className="w-full min-w-0 rounded-xl border border-slate-300 px-4 py-3 text-base text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
-                  aria-invalid={!validation.ok}
-                  aria-describedby={`${amountHelpId} ${amountStatusId}`}
-                />
-                <select
-                  value={from}
-                  onChange={(e) => setFrom(e.target.value as Period)}
-                  className="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
-                  aria-label="Area unit"
-                >
-                  {PERIOD_ORDER.map((p) => (
-                    <option key={p} value={p}>
-                      {PERIOD_LABEL[p]}
-                    </option>
-                  ))}
-                </select>
-              </div>
+    <div className="grid gap-y-3 gap-x-5 lg:grid-cols-12">
+      <div className="lg:col-span-7">
+        <label className="block text-sm font-semibold text-slate-800 mb-2">
+          Coverage Area
+        </label>
 
-              {!validation.ok ? (
-                <p
-                  id={amountStatusId}
-                  className="mt-2 text-sm text-rose-700"
-                  role="alert"
-                  aria-live="polite"
-                >
-                  {validation.message}
-                </p>
-              ) : validation.message ? (
-                <p
-                  id={amountStatusId}
-                  className="mt-2 text-sm text-slate-600"
-                  aria-live="polite"
-                >
-                  {validation.message}
-                </p>
-              ) : (
-                <></>
-              )}
+        {/* FIX: medium and below => each control gets its own row; lg+ => input + unit on same row */}
+        <div className="flex flex-col gap-2 lg:flex-row">
+          <input
+            inputMode="decimal"
+            value={inputGroupedDisplay}
+            onFocus={() => setAmountFocused(true)}
+            onBlur={() => setAmountFocused(false)}
+            onChange={(e) => setAmount(e.target.value)}
+            placeholder="e.g. 500 or 1250.50"
+            className="w-full text-lg min-w-0 rounded-xl border border-slate-300 px-4 py-3 text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
+            aria-invalid={!validation.ok}
+            aria-describedby={`${amountHelpId} ${amountStatusId}`}
+          />
 
-              {interpretationLine ? (
-                <p className="mt-2 text-sm text-slate-600" aria-live="polite">
-                  <span className="font-semibold tabular-nums">
-                    {interpretationLine}
-                  </span>
-                </p>
-              ) : null}
-            </div>
+          <select
+            value={from}
+            onChange={(e) => setFrom(e.target.value as Period)}
+            className="w-full lg:w-auto rounded-xl border border-slate-300 bg-white px-3 py-3 text-base font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
+            aria-label="Area unit"
+          >
+            {PERIOD_ORDER.map((p) => (
+              <option key={p} value={p}>
+                {PERIOD_LABEL[p]}
+              </option>
+            ))}
+          </select>
+        </div>
 
-            <div className="md:col-span-7">
-              <div className="grid gap-y-3 gap-x-5 sm:grid-cols-12">
-                <div className="sm:col-span-2 flex sm:items-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setFrom(to);
-                      setTo(from);
-                    }}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-900 hover:bg-sky-50 hover:border-sky-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
-                    aria-label="Swap from and to"
-                  >
-                    ⇄
-                  </button>
-                </div>
-
-                <div className="sm:col-span-10">
-                  <label className="block text-sm font-semibold text-slate-800 mb-2">
-                    Convert to
-                  </label>
-                  <select
-                    value={to}
-                    onChange={(e) => setTo(e.target.value as Period)}
-                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base font-medium text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
-                    aria-label="Convert to"
-                  >
-                    {PERIOD_ORDER.map((p) => (
-                      <option key={p} value={p}>
-                        {PERIOD_LABEL[p]}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div
-            id={resultRegionId}
-            className="mt-3 rounded-2xl border border-slate-200 bg-[#f7fbff] p-5 sm:p-6 shadow-sm relative"
-            role="region"
-            aria-label="Calculated area"
+        {!validation.ok ? (
+          <p
+            id={amountStatusId}
+            className="mt-2 text-sm text-rose-700"
+            role="alert"
             aria-live="polite"
           >
-            <div className="absolute inset-x-0 top-0 h-0.5 bg-sky-200 rounded-t-2xl" />
-            <div className="flex items-center gap-2">
-              <div
-                className="h-2 w-2 rounded-full bg-sky-600"
-                aria-hidden="true"
-              />
-              <div className="text-sm font-semibold text-slate-800">
-                Calculated area
+            {validation.message}
+          </p>
+        ) : validation.message ? (
+          <p
+            id={amountStatusId}
+            className="mt-2 text-sm text-slate-600"
+            aria-live="polite"
+          >
+            {validation.message}
+          </p>
+        ) : (
+          <></>
+        )}
+
+        {interpretationLine ? (
+          <p className="mt-2 text-sm text-slate-600" aria-live="polite">
+            <span className="font-semibold tabular-nums">{interpretationLine}</span>
+          </p>
+        ) : null}
+      </div>
+
+      <div className="lg:col-span-5">
+        <label className="block text-sm font-semibold text-slate-800 mb-2">
+          Convert to
+        </label>
+        <select
+          value={to}
+          onChange={(e) => setTo(e.target.value as Period)}
+          className="flex w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-base font-medium text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
+          aria-label="Convert to"
+        >
+          {PERIOD_ORDER.map((p) => (
+            <option key={p} value={p}>
+              {PERIOD_LABEL[p]}
+            </option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <div
+      id={resultRegionId}
+      className="mt-3 rounded-2xl border border-slate-200 bg-[#f7fbff] p-5 sm:p-6 shadow-sm relative"
+      role="region"
+      aria-label="Calculated area"
+      aria-live="polite"
+    >
+      <div className="absolute inset-x-0 top-0 h-0.5 bg-sky-200 rounded-t-2xl" />
+      <div className="flex items-center gap-2">
+        <div className="h-2 w-2 rounded-full bg-sky-600" aria-hidden="true" />
+        <div className="text-sm font-semibold text-slate-800">
+          <span className="text-base font-semibold text-slate-700">
+            {PERIOD_LABEL[to]}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex flex-col">
+        <div className="text-3xl sm:text-5xl font-extrabold text-emerald-700 tabular-nums leading-none min-h-[3.25rem] sm:min-h-[4rem]">
+          {validation.ok ? <>{displayMoney} </> : "—"}
+        </div>
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {(
+          [
+            ["Square inches (in²)", breakdown.sqin, "sqin"],
+            ["Square centimeters (cm²)", breakdown.sqcm, "sqcm"],
+            ["Square feet (ft²)", breakdown.sqft, "sqft"],
+            ["Square yards (yd²)", breakdown.sqyd, "sqyd"],
+            ["Square meters (m²)", breakdown.sqm, "sqm"],
+            ["Acres", breakdown.acre, "acre"],
+            ["Hectares", breakdown.hectare, "hectare"],
+          ] as const
+        )
+          .filter(([, , key]) => key !== to)
+          .map(([label, val, key]) => (
+            <div
+              key={key}
+              className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
+            >
+              <div className="text-xs font-medium text-slate-600">{label}</div>
+              <div className="mt-1 text-lg font-bold text-slate-900 tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
+                {validation.ok ? formatRationalMoney(val) : "—"}
               </div>
             </div>
+          ))}
+      </div>
 
-            <div className="mt-2 flex flex-col">
-              <div className="text-3xl sm:text-5xl font-extrabold text-emerald-700 tabular-nums leading-none min-h-[3.25rem] sm:min-h-[4rem]">
-                {validation.ok ? (
-                  <>
-                    {displayMoney}{" "}
-                    <span className="text-base font-semibold text-slate-700">
-                      {PERIOD_LABEL[to]}
-                    </span>
-                  </>
-                ) : (
-                  "—"
-                )}
-              </div>
-            </div>
+      <div className="flex flex-wrap items-center gap-3 mt-6 sm:mt-6">
+        <div
+          id="export-controls-mobile"
+          className=" sm:hidden flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between"
+        >
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window === "undefined") return;
+                window.print();
+              }}
+              className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-50 hover:border-sky-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7fbff]"
+            >
+              Print / Save PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 mt-5">
-              {(
-                [
-                  ["Square inches (in²)", breakdown.sqin, "sqin"],
-                  ["Square centimeters (cm²)", breakdown.sqcm, "sqcm"],
-                  ["Square feet (ft²)", breakdown.sqft, "sqft"],
-                  ["Square yards (yd²)", breakdown.sqyd, "sqyd"],
-                  ["Square meters (m²)", breakdown.sqm, "sqm"],
-                  ["Acres", breakdown.acre, "acre"],
-                  ["Hectares", breakdown.hectare, "hectare"],
-                ] as const
-              )
-                .filter(([, , key]) => key !== to)
-                .map(([label, val, key]) => (
-                  <div
-                    key={key}
-                    className="rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-sm"
-                  >
-                    <div className="text-xs font-medium text-slate-600">
-                      {label}
-                    </div>
-                    <div className="mt-1 text-lg font-bold text-slate-900 tabular-nums whitespace-nowrap overflow-hidden text-ellipsis">
-                      {validation.ok ? formatRationalMoney(val) : "—"}
-                    </div>
-                  </div>
-                ))}
+    <div className="mt-4 rounded-xl border border-slate-200 bg-emerald-50 px-4 py-4">
+      <details className="group">
+        {/* FIX: summary block stacks cleanly on small; no cramped right-side chunk */}
+        <summary className="cursor-pointer list-none flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <div className="text-sm font-semibold text-slate-800">
+              Material estimate settings (optional)
             </div>
-
-            <div className="flex flex-wrap items-center gap-3 mt-6 sm:mt-6">
-              <div
-                id="export-controls-mobile"
-                className=" sm:hidden flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between"
-              >
-                <div className="flex flex-wrap gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (typeof window === "undefined") return;
-                      window.print();
-                    }}
-                    className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-50 hover:border-sky-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7fbff]"
-                  >
-                    Print / Save PDF
-                  </button>
-                </div>
-              </div>
-            </div>
+            <span className="text-xs font-semibold text-slate-500">Expand to edit</span>
           </div>
 
-          <div className="mt-4 rounded-xl border border-slate-200 bg-emerald-50 px-4 py-4">
-            <details className="group">
-              <summary className="cursor-pointer list-none flex flex-wrap items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="text-sm font-semibold text-slate-800">
-                    Material estimate settings (optional)
-                  </div>
-                  <span className="text-xs font-semibold text-slate-500">
-                    Expand to edit
-                  </span>
-                </div>
+          <div className="flex w-full sm:w-auto items-center justify-between sm:justify-end gap-3">
+            <div className="text-sm font-semibold text-slate-700 tabular-nums whitespace-nowrap">
+              {hasCoverageRate && estimatorValidation.ok ? estimateDisplay : "—"}
+            </div>
 
-                <div className="flex items-center gap-3">
-                  {/* Collapsed: show result (or prompt) */}
-                  <div className="text-sm font-semibold text-slate-700 tabular-nums">
-                    {hasCoverageRate && estimatorValidation.ok
-                      ? estimateDisplay
-                      : "—"}
-                  </div>
-
-                  <span className="ml-2 text-slate-400 transition-transform group-open:rotate-180">
-                    ▾
-                  </span>
-                </div>
-              </summary>
-
-              {/* Expanded content */}
-              <div className="mt-3">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                  <div className="text-sm font-semibold text-slate-800">
-                    Settings
-                  </div>
-
-                  <label className="inline-flex items-center gap-2">
-                    <span className="sr-only">Material unit</span>
-                    <select
-                      value={currency}
-                      onChange={(e) => setCurrency(e.target.value)}
-                      className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
-                      aria-label="Material unit"
-                    >
-                      {CURRENCY_OPTIONS.map((c) => (
-                        <option key={c.code} value={c.code}>
-                          {c.label}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-                </div>
-
-                <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                  <label className="block">
-                    <span className="block text-xs font-semibold text-slate-700 mb-1">
-                      Coverage rate (area per unit)
-                    </span>
-                    <input
-                      inputMode="decimal"
-                      value={coverageRate}
-                      onChange={(e) => setCoverageRate(e.target.value)}
-                      placeholder="e.g. 350"
-                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
-                      aria-invalid={!estimatorValidation.ok}
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="block text-xs font-semibold text-slate-700 mb-1">
-                      Coverage area unit
-                    </span>
-                    <select
-                      value={coverageUnit}
-                      onChange={(e) =>
-                        setCoverageUnit(e.target.value as Period)
-                      }
-                      className="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
-                    >
-                      {PERIOD_ORDER.map((p) => (
-                        <option key={p} value={p}>
-                          {PERIOD_LABEL[p]}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
-
-                  <label className="block">
-                    <span className="block text-xs font-semibold text-slate-700 mb-1">
-                      Coats (multiplier)
-                    </span>
-                    <input
-                      inputMode="numeric"
-                      value={coats}
-                      onChange={(e) => setCoats(e.target.value)}
-                      placeholder="1"
-                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
-                      aria-invalid={!estimatorValidation.ok}
-                    />
-                  </label>
-
-                  <label className="block">
-                    <span className="block text-xs font-semibold text-slate-700 mb-1">
-                      Waste %
-                    </span>
-                    <input
-                      inputMode="decimal"
-                      value={wastePct}
-                      onChange={(e) => setWastePct(e.target.value)}
-                      placeholder="10"
-                      className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
-                      aria-invalid={!estimatorValidation.ok}
-                    />
-                  </label>
-                </div>
-
-                {!estimatorValidation.ok ? (
-                  <p
-                    className="mt-3 text-sm text-rose-700"
-                    role="alert"
-                    aria-live="polite"
-                  >
-                    {estimatorValidation.message}
-                  </p>
-                ) : hasCoverageRate ? (
-                  <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                    <div className="text-sm font-semibold text-slate-800">
-                      Estimated needed
-                    </div>
-                    <div className="mt-2 text-2xl sm:text-4xl font-extrabold text-sky-700 tabular-nums leading-none whitespace-nowrap overflow-hidden text-ellipsis">
-                      {estimateDisplay}
-                    </div>
-                    <div className="mt-2 text-sm text-slate-600 leading-relaxed">
-                      Uses: (area ÷ coverage) × coats × (1 + waste% ÷ 100)
-                    </div>
-                  </div>
-                ) : (
-                  <p className="mt-3 text-sm text-slate-600 leading-relaxed">
-                    Enter a coverage rate to compute an estimate.
-                  </p>
-                )}
-              </div>
-            </details>
+            <span className="text-slate-400 transition-transform group-open:rotate-180">
+              ▾
+            </span>
           </div>
+        </summary>
 
-          <div className="flex flex-wrap items-center gap-3 mt-3">
-            <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
-              <input
-                type="checkbox"
-                checked={roundForDisplay}
-                onChange={(e) => setRoundForDisplay(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white cursor-pointer"
-              />
-              Round results for display
-            </label>
+        <div className="mt-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="text-sm font-semibold text-slate-800">Settings</div>
 
-            <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
-              <span className="sr-only">Display decimals</span>
+            <label className="inline-flex items-center gap-2">
+              <span className="sr-only">Material unit</span>
               <select
-                value={displayDecimals}
-                onChange={(e) =>
-                  setDisplayDecimals(safeDisplayDecimals(e.target.value, 2))
-                }
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value)}
                 className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
-                aria-describedby={decimalsHelpId}
-                aria-label="Display decimals"
+                aria-label="Material unit"
               >
-                <option value={0}>0 decimals</option>
-                <option value={2}>2 decimals</option>
-                <option value={4}>4 decimals</option>
-                <option value={6}>6 decimals</option>
+                {CURRENCY_OPTIONS.map((c) => (
+                  <option key={c.code} value={c.code}>
+                    {c.label}
+                  </option>
+                ))}
               </select>
             </label>
           </div>
-          <div className="mt-3 mb-4 rounded-xl bg-slate-50 p-4">
-            <details className="group">
-              <summary className="cursor-pointer list-none font-semibold text-sky-800 flex items-center justify-between hover:text-sky-900">
-                <span>Assumptions & disclaimer</span>
-                <span className="ml-4 text-slate-400 transition-transform group-open:rotate-180">
-                  ▾
-                </span>
-              </summary>
 
-              {/* Collapsed preview line */}
-              <div className="mt-2 text-sm text-slate-600 leading-relaxed">
-                <span className="font-medium text-slate-700">Summary:</span>{" "}
-                Exact unit definitions, estimate-only outputs, follow
-                manufacturer specs.
-              </div>
-
-              <div className="mt-3 space-y-3 text-sm text-slate-600 leading-relaxed">
-                <div>
-                  <span className="font-medium text-slate-700">
-                    Assumptions:
-                  </span>{" "}
-                  area unit conversions are based on exact definitions (for
-                  example, 1 inch = 0.0254 meters exactly). Converted values are
-                  for measurement and estimating, not a substitute for
-                  product-specific instructions.
-                </div>
-
-                <div>
-                  <span className="font-medium text-slate-700">
-                    What is included:
-                  </span>{" "}
-                  area conversion. If you add a coverage rate below, the
-                  estimate uses your inputs and does not account for site
-                  conditions or product variations.
-                </div>
-
-                <p>
-                  <span className="font-medium text-slate-700">
-                    Disclaimer:
-                  </span>{" "}
-                  always follow manufacturer specs and local building guidelines
-                  for your specific material and project.
+          <div className="mt-2 grid gap-3 sm:grid-cols-2">
+            <label className="block">
+              <span className="block text-xs font-semibold text-slate-700 mb-1">
+                Coverage rate (area per unit)
+              </span>
+              <input
+                inputMode="decimal"
+                value={coverageRate}
+                onChange={(e) => setCoverageRate(e.target.value)}
+                placeholder="e.g. 350"
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
+                aria-invalid={!estimatorValidation.ok}
+              />
+              {hasCoverageRate &&
+              rateParsed.ok &&
+              rateParsed.scaled !== undefined &&
+              rateParsed.scaled === 0n ? (
+                <p className="mt-2 text-xs text-rose-700" role="alert" aria-live="polite">
+                  Coverage rate must be greater than 0.
                 </p>
-              </div>
-            </details>
-          </div>
-        </div>
-      </section>
+              ) : null}
+            </label>
 
-      <section
-        id="how-it-works"
-        className="relative overflow-hidden rounded-3xl bg-white ring-1 ring-slate-200/70 shadow-sm"
-      >
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0"
-        >
-          <div className="absolute -top-24 -right-24 h-72 w-72 rounded-full bg-sky-100/60 blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-slate-100/70 blur-3xl" />
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-sky-300/60 to-transparent" />
-        </div>
+            <label className="block">
+              <span className="block text-xs font-semibold text-slate-700 mb-1">
+                Coverage area unit
+              </span>
+              <select
+                value={coverageUnit}
+                onChange={(e) => setCoverageUnit(e.target.value as Period)}
+                className="w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
+              >
+                {PERIOD_ORDER.map((p) => (
+                  <option key={p} value={p}>
+                    {PERIOD_LABEL[p]}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        <div className="relative p-6 sm:p-10">
-          <div className="mx-auto max-w-4xl">
-            <div className="flex flex-col gap-4 sm:gap-5">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <h2 className="text-center sm:text-left text-3xl sm:text-4xl font-extrabold text-sky-800 tracking-tight leading-tight">
-                    How the coverage calculator works
-                  </h2>
-                  <p className="text-center sm:text-left mt-2 text-slate-600 leading-7 max-w-2xl">
-                    This tool helps you do two things with the same set of
-                    inputs: convert an area between common units and estimate
-                    how many units of material you need when you have a coverage
-                    rate. You enter an area, pick the unit it is currently
-                    written in, choose a target unit for the headline output,
-                    and optionally add a coverage rate to estimate material
-                    quantity with coats and waste.
-                  </p>
-                </div>
+            <label className="block">
+              <span className="block text-xs font-semibold text-slate-700 mb-1">
+                Coats (multiplier)
+              </span>
+              <input
+                inputMode="numeric"
+                value={coats}
+                onChange={(e) => setCoats(e.target.value)}
+                placeholder="1"
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
+                aria-invalid={!estimatorValidation.ok}
+              />
+            </label>
 
-                <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-sky-50 text-sky-700 ring-1 ring-sky-200/70 px-3 py-1 text-xs font-semibold">
-                    <span className="h-2 w-2 rounded-full bg-sky-500" />
-                    Exact unit definitions
-                  </span>
-                  <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 text-slate-700 ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold">
-                    <span className="h-2 w-2 rounded-full bg-slate-500" />
-                    Display rounding only
-                  </span>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4 hover:ring-sky-200/80 transition">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    INPUT
-                  </div>
-                  <div className="mt-2 text-sm font-semibold text-slate-900">
-                    Area + unit
-                  </div>
-                </div>
-                <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4 hover:ring-sky-200/80 transition">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    CONVERT
-                  </div>
-                  <div className="mt-2 text-sm font-semibold text-slate-900">
-                    Unit → unit
-                  </div>
-                </div>
-                <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4 hover:ring-sky-200/80 transition">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    ESTIMATE
-                  </div>
-                  <div className="mt-2 text-sm font-semibold text-slate-900">
-                    Coverage rate
-                  </div>
-                </div>
-                <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4 hover:ring-sky-200/80 transition">
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                    OUTPUT
-                  </div>
-                  <div className="mt-2 text-sm font-semibold text-slate-900">
-                    Results + breakdown
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-10 space-y-6 text-base text-slate-700 leading-7">
-              {/* SectionCard: Examples */}
-              <div className="group relative rounded-3xl bg-white ring-1 ring-slate-200/80 shadow-sm">
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-sky-500/80 via-sky-400/50 to-transparent"
-                />
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 ring-1 ring-sky-200/60">
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-5 w-5 text-sky-600"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M4 19V5m0 14h16M8 15l3-3 3 3 6-6"
-                        />
-                      </svg>
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-xl font-extrabold text-sky-800 tracking-tight">
-                        Examples
-                      </h3>
-                      <p className="mt-1 text-slate-600">
-                        Common real-world scenarios and the exact way to use
-                        this calculator.
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Paint label in m², plan in ft²
-                      </div>
-                      <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                        <li>Enter your room area (example: 850).</li>
-                        <li>Set the area unit to Square feet (ft²).</li>
-                        <li>Convert to Square meters (m²).</li>
-                        <li>
-                          Optional: enter a coverage rate that matches the label
-                          unit (example: 10 m² per unit).
-                        </li>
-                      </ol>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Yard project written in m², supplier quotes in yd²
-                      </div>
-                      <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                        <li>Enter your plan area (example: 40).</li>
-                        <li>Set the area unit to Square meters (m²).</li>
-                        <li>Convert to Square yards (yd²).</li>
-                        <li>
-                          Use the breakdown cards to sanity-check against ft² or
-                          acres if needed.
-                        </li>
-                      </ol>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Multi-coat finish planning
-                      </div>
-                      <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                        <li>Enter the area and select the correct unit.</li>
-                        <li>
-                          Enter the coverage rate from the product label
-                          (example: 350 ft² per unit).
-                        </li>
-                        <li>Set Coats to 2 if you are doing two coats.</li>
-                        <li>
-                          Add a waste buffer (example: 10%) if you want a
-                          planning margin.
-                        </li>
-                      </ol>
-                    </div>
-
-                    <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Large land areas (acres and hectares)
-                      </div>
-                      <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                        <li>Enter the area (example: 2.5).</li>
-                        <li>Select Acres or Hectares as your input unit.</li>
-                        <li>
-                          Convert to m² or ft² to compare against product
-                          coverage specs.
-                        </li>
-                        <li>
-                          If your output looks tiny, you likely selected the
-                          wrong input unit.
-                        </li>
-                      </ol>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* SectionCard: What it does */}
-              <div className="group relative rounded-3xl bg-white ring-1 ring-slate-200/80 shadow-sm">
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-sky-500/80 via-sky-400/50 to-transparent"
-                />
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 ring-1 ring-sky-200/60">
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-5 w-5 text-sky-600"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M4 7h16M4 12h12M4 17h14"
-                        />
-                      </svg>
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-xl font-extrabold text-sky-800 tracking-tight">
-                        What this coverage calculator gives you
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    <p>
-                      This page is built for quick, practical estimating. You
-                      can use it as a pure area calculator or as a material
-                      quantity estimator. The top controls convert your area
-                      between units for measurement and planning. The optional
-                      coverage panel uses a coverage rate (area per unit) to
-                      estimate how many units of material you should plan to buy
-                      for the same area, with support for coats (multiplier) and
-                      waste percent.
-                    </p>
-                    <ul className="list-disc pl-5 space-y-2">
-                      <li>
-                        Convert between common area units used in home projects
-                        and material specs (ft², m², yd², in², cm², acres,
-                        hectares)
-                      </li>
-                      <li>
-                        Preserve decimal precision end to end, then apply
-                        rounding for display only when you choose to
-                      </li>
-                      <li>
-                        Estimate material quantity when you know the coverage
-                        rate, plus adjust for coats and waste
-                      </li>
-                      <li>
-                        See a clean breakdown in other units for sanity checks
-                        and quick cross-references
-                      </li>
-                    </ul>
-
-                    <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        When to use each mode
-                      </div>
-                      <ul className="mt-2 list-disc pl-5 space-y-2">
-                        <li>
-                          Use{" "}
-                          <span className="font-semibold text-slate-900">
-                            area conversion
-                          </span>{" "}
-                          when your plan is written in one unit (for example,
-                          ft²) but a product label is written in another (for
-                          example, m²).
-                        </li>
-                        <li>
-                          Use{" "}
-                          <span className="font-semibold text-slate-900">
-                            coverage estimating
-                          </span>{" "}
-                          when you have a coverage rate like “covers 350 ft² per
-                          unit” or “25 m² per unit,” and you want a quantity
-                          estimate.
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* SectionCard: Area input + conversion */}
-              <div className="group relative rounded-3xl bg-white ring-1 ring-slate-200/80 shadow-sm">
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-sky-500/80 via-sky-400/50 to-transparent"
-                />
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 ring-1 ring-sky-200/60">
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-5 w-5 text-sky-600"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M4 6h16M9 6v12m6-12v12"
-                        />
-                      </svg>
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-xl font-extrabold text-sky-800 tracking-tight">
-                        Area input and conversions
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    <p>
-                      Start with the area value. Enter it exactly as you have it
-                      from a room plan, a yard measurement, a blueprint, or a
-                      product worksheet. Then choose the unit that value is
-                      currently in using the area unit selector next to the
-                      input. The headline result is shown in your chosen target
-                      unit.
-                    </p>
-
-                    <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Valid input formats
-                      </div>
-                      <ul className="mt-2 list-disc pl-5 space-y-2">
-                        <li>1000</li>
-                        <li>1,000</li>
-                        <li>1000.5</li>
-                        <li>1,000.50</li>
-                        <li>.5 (interpreted as 0.5)</li>
-                        <li>12. (interpreted as 12)</li>
-                      </ul>
-                    </div>
-
-                    <p>
-                      The “From” unit is the unit your entered number
-                      represents. The “To” unit is the unit you want to see in
-                      the primary result. Swapping From and To reverses the
-                      conversion direction. The tool also shows a breakdown of
-                      the same area expressed in other common units, which is
-                      useful for quick sanity checks.
-                    </p>
-
-                    <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Practical conversion checks
-                      </div>
-                      <ul className="mt-2 list-disc pl-5 space-y-2">
-                        <li>
-                          1 ft² = 144 in². If your breakdown looks off by a
-                          factor of 144, your input unit is likely wrong.
-                        </li>
-                        <li>
-                          1 m² ≈ 10.7639 ft². Large swings between m² and ft²
-                          are expected because the base units differ in size.
-                        </li>
-                        <li>
-                          Acres and hectares are large-area units. If you
-                          accidentally input a small room in acres, the output
-                          will look tiny.
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* SectionCard: Coverage rate estimate */}
-              <div className="group relative rounded-3xl bg-white ring-1 ring-slate-200/80 shadow-sm">
-                <div
-                  aria-hidden="true"
-                  className="absolute inset-y-0 left-0 w-1 bg-gradient-to-b from-sky-500/80 via-sky-400/50 to-transparent"
-                />
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start gap-3">
-                    <div className="mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-50 ring-1 ring-sky-200/60">
-                      <svg
-                        aria-hidden="true"
-                        viewBox="0 0 24 24"
-                        className="h-5 w-5 text-sky-600"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M5 12h14M12 5v14"
-                        />
-                      </svg>
-                    </div>
-                    <div className="min-w-0">
-                      <h3 className="text-xl font-extrabold text-sky-800 tracking-tight">
-                        Coverage estimating (optional)
-                      </h3>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 space-y-3">
-                    <p>
-                      If you know the coverage rate of a product, you can
-                      estimate quantity directly from area. Coverage rate here
-                      means “area per unit,” for example “350 ft² per unit” or
-                      “25 m² per unit.” Enter the rate, select the rate’s area
-                      unit, and the tool estimates the number of units you need
-                      for the entered area.
-                    </p>
-
-                    <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        The estimate formula used
-                      </div>
-                      <ul className="mt-2 list-disc pl-5 space-y-2">
-                        <li>
-                          Convert your project area into the coverage rate’s
-                          area unit
-                        </li>
-                        <li>
-                          Apply coats:{" "}
-                          <span className="font-semibold text-slate-900">
-                            adjusted area = area × coats
-                          </span>
-                        </li>
-                        <li>
-                          Apply waste:{" "}
-                          <span className="font-semibold text-slate-900">
-                            waste factor = 1 + (waste% ÷ 100)
-                          </span>
-                        </li>
-                        <li>
-                          Estimate units:{" "}
-                          <span className="font-semibold text-slate-900">
-                            units = (adjusted area × waste factor) ÷ coverage
-                            rate
-                          </span>
-                        </li>
-                      </ul>
-                    </div>
-
-                    <p>
-                      The output is a math-only estimate based on your inputs.
-                      It does not apply product-specific rules such as surface
-                      porosity, texture, thickness, compaction, overlap, or
-                      packing. If a manufacturer provides multiple coverage
-                      rates (for example, smooth vs rough surfaces, or different
-                      depths), use the rate that matches your scenario.
-                    </p>
-
-                    <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Typical ways people use coats and waste
-                      </div>
-                      <ul className="mt-2 list-disc pl-5 space-y-2">
-                        <li>
-                          <span className="font-semibold text-slate-900">
-                            Coats
-                          </span>{" "}
-                          is most common for paint, sealers, primers, and
-                          finishes. If you are applying two coats, set coats to
-                          2 so the estimated area doubles.
-                        </li>
-                        <li>
-                          <span className="font-semibold text-slate-900">
-                            Waste %
-                          </span>{" "}
-                          is a planning buffer. It is commonly used for offcuts,
-                          overlap, imperfect coverage, and minor measurement
-                          error. For many projects, 5 to 15% is a typical range,
-                          but you can set it to 0 if you do not want a buffer.
-                        </li>
-                      </ul>
-                    </div>
-
-                    {/* Examples block for Coverage estimating */}
-                    <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                      <div className="text-sm font-bold text-slate-900">
-                        Coverage estimate examples
-                      </div>
-                      <div className="mt-2 grid gap-3 sm:grid-cols-2">
-                        <div className="rounded-2xl bg-white ring-1 ring-slate-200/70 p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Paint
-                          </div>
-                          <div className="mt-2 text-sm text-slate-700">
-                            <ul className="list-disc pl-5 space-y-1">
-                              <li>Area: 850 ft²</li>
-                              <li>Coverage: 350 ft² per gallon</li>
-                              <li>Coats: 2</li>
-                              <li>Waste: 10%</li>
-                            </ul>
-                            <div className="mt-2 text-sm text-slate-700">
-                              Result: estimated gallons = (850 ÷ 350) × 2 × 1.10
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="rounded-2xl bg-white ring-1 ring-slate-200/70 p-4">
-                          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                            Sealer in m²
-                          </div>
-                          <div className="mt-2 text-sm text-slate-700">
-                            <ul className="list-disc pl-5 space-y-1">
-                              <li>Area: 40 m²</li>
-                              <li>Coverage: 12 m² per unit</li>
-                              <li>Coats: 1</li>
-                              <li>Waste: 5%</li>
-                            </ul>
-                            <div className="mt-2 text-sm text-slate-700">
-                              Result: estimated units = (40 ÷ 12) × 1 × 1.05
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="mt-3 text-sm text-slate-600 leading-relaxed">
-                        Tip: if your coverage label is in m² but your plan is in
-                        ft², convert your area to m² first, then enter the
-                        coverage rate in m² per unit.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Dark callout block like the reference file */}
-              <div className="relative overflow-hidden rounded-3xl bg-slate-900 text-white p-6 sm:p-7">
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0"
+            <label className="block">
+              <span className="block text-xs font-semibold text-slate-700 mb-1">
+                Waste %
+              </span>
+              <input
+                inputMode="decimal"
+                value={wastePct}
+                onChange={(e) => setWastePct(e.target.value)}
+                placeholder="10"
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400"
+                aria-invalid={!estimatorValidation.ok}
+              />
+              {wasteWarning ? (
+                <p
+                  className={`mt-2 text-xs ${
+                    wasteWarning.tone === "strong" ? "text-rose-700" : "text-slate-600"
+                  }`}
+                  aria-live="polite"
                 >
-                  <div className="absolute -top-20 -right-20 h-64 w-64 rounded-full bg-sky-500 blur-3xl opacity-20" />
-                  <div className="absolute -bottom-20 -left-20 h-64 w-64 rounded-full bg-slate-500 blur-3xl opacity-30" />
-                </div>
+                  {wasteWarning.text}
+                </p>
+              ) : null}
+            </label>
+          </div>
 
-                <div className="relative">
-                  <div className="text-sm font-semibold text-sky-300">
-                    Utility note
-                  </div>
-                  <h3 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-sky-800">
-                    Estimates are math-only planning outputs
-                  </h3>
-                  <p className="mt-3 text-slate-200 leading-7">
-                    This calculator converts area using exact unit definitions
-                    and estimates material quantity using the coverage rate,
-                    coats, and waste values you provide. It does not account for
-                    product variations, surface conditions, depth targets,
-                    compaction, application technique, or local requirements.
-                    For purchasing, always confirm coverage guidance on the
-                    specific product label and adjust inputs to match your
-                    project.
-                  </p>
-                </div>
+          {coverageUnitNote ? (
+            <p className="mt-3 text-xs text-slate-600" aria-live="polite">
+              {coverageUnitNote}
+            </p>
+          ) : null}
+
+          {!estimatorValidation.ok ? (
+            <p className="mt-3 text-sm text-rose-700" role="alert" aria-live="polite">
+              {estimatorValidation.message}
+            </p>
+          ) : hasCoverageRate ? (
+            <div className="mt-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+              <div className="text-sm font-semibold text-slate-800">Estimated needed</div>
+              <div className="mt-2 text-2xl sm:text-4xl font-extrabold text-sky-700 tabular-nums leading-none whitespace-nowrap overflow-hidden text-ellipsis">
+                {estimateDisplay}
+              </div>
+              <div className="mt-2 text-sm text-slate-600 leading-relaxed">
+                Uses: (area ÷ coverage) × coats × (1 + waste% ÷ 100)
               </div>
             </div>
+          ) : (
+            <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+              Enter a coverage rate to compute an estimate.
+            </p>
+          )}
+        </div>
+      </details>
+    </div>
+
+    <div className="flex flex-wrap items-center gap-3 mt-3">
+      <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
+        <input
+          type="checkbox"
+          checked={roundForDisplay}
+          onChange={(e) => setRoundForDisplay(e.target.checked)}
+          className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white cursor-pointer"
+        />
+        Round results for display
+      </label>
+
+      <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
+        <span className="sr-only">Display decimals</span>
+        <select
+          value={displayDecimals}
+          onChange={(e) => setDisplayDecimals(safeDisplayDecimals(e.target.value, 2))}
+          className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
+          aria-describedby={decimalsHelpId}
+          aria-label="Display decimals"
+        >
+          <option value={0}>0 decimals</option>
+          <option value={2}>2 decimals</option>
+          <option value={4}>4 decimals</option>
+          <option value={6}>6 decimals</option>
+        </select>
+      </label>
+
+      <span className="sr-only">
+        Rounding only affects what you see. Conversions use exact unit definitions.
+      </span>
+    </div>
+
+    <div className="mt-3 mb-4 rounded-xl bg-slate-50 p-4">
+      <details className="group">
+        <summary className="cursor-pointer list-none font-semibold text-sky-800 flex items-center justify-between hover:text-sky-900">
+          <span>Assumptions & disclaimer</span>
+          <span className="ml-4 text-slate-400 transition-transform group-open:rotate-180">
+            ▾
+          </span>
+        </summary>
+
+        <div className="mt-2 text-sm text-slate-600 leading-relaxed">
+          <span className="font-medium text-slate-700">Summary:</span>{" "}
+          Exact unit definitions, estimate-only outputs, follow manufacturer specs.
+        </div>
+
+        <div className="mt-3 space-y-3 text-sm text-slate-600 leading-relaxed">
+          <div>
+            <span className="font-medium text-slate-700">Assumptions:</span>{" "}
+            area unit conversions are based on exact definitions (for example, 1 inch =
+            0.0254 meters exactly). Converted values are for measurement and estimating,
+            not a substitute for product-specific instructions.
           </div>
+
+          <div>
+            <span className="font-medium text-slate-700">What is included:</span>{" "}
+            area conversion. If you add a coverage rate below, the estimate uses your
+            inputs and does not account for site conditions or product variations.
+          </div>
+
+          <p>
+            <span className="font-medium text-slate-700">Disclaimer:</span>{" "}
+            always follow manufacturer specs and local building guidelines for your
+            specific material and project.
+          </p>
         </div>
-      </section>
+      </details>
+    </div>
+  </div>
+</section>
 
-      <section id="faq" className="max-w-5xl mx-auto py-16 px-6">
-        <h2 className="text-3xl font-bold text-center mb-10 text-sky-800 tracking-tight">
-          Frequently Asked Questions
-        </h2>
 
-        <div className="divide-y divide-slate-200">
-          {faqData.map((f, i) => (
-            <details key={i} className="group py-4">
-              <summary className="cursor-pointer list-none font-semibold text-lg text-sky-800 flex items-center justify-between hover:text-sky-900">
-                <span>{f.q}</span>
-                <span className="ml-4 text-slate-400 transition-transform group-open:rotate-180">
-                  ▾
-                </span>
-              </summary>
+      <HowItWorks />
+      <ToolFit />
+      <FAQ />
 
-              <div className="mt-2 text-slate-700 leading-relaxed max-w-prose">
-                {f.a}
-              </div>
-            </details>
-          ))}
-        </div>
-      </section>
-
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
