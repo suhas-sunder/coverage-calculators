@@ -3,6 +3,8 @@ import { route, index, type RouteConfig } from "@react-router/dev/routes";
 export default [
   // Home
   index("routes/home.tsx"),
+  route("coverage-calculator", "routes/coverage-calculator.tsx"),
+  route("paint-coverage-calculator", "routes/paint-coverage-calculator.tsx"),
 
   // Legal / misc
   route("terms-of-service", "routes/terms-of-service.tsx"),

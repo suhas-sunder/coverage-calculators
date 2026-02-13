@@ -2,27 +2,39 @@ export default function FAQ() {
   const faqData = [
     {
       q: "What does “coverage” mean on this page?",
-      a: "Coverage is how much area a given amount of material can cover. For example, paint might cover 350 ft² per gallon, or mulch might be planned as a depth that implies a volume calculation. This page focuses on area conversions and a simple area-per-unit estimate.",
+      a: "On this page, “coverage” means the area a single unit of material can cover (area per unit). Examples: 350 ft² per gallon, 32 m² per bucket, 10 m² per liter. This tool converts area between units and (optionally) estimates how many units you need from that coverage rate.",
     },
     {
-      q: "What does the area calculator do?",
-      a: "It converts the same area between common units like ft², m², acres, and hectares using exact unit definitions (for example, 1 inch = 0.0254 meters exactly).",
+      q: "What’s the difference between converting area and estimating material?",
+      a: "Area conversion just expresses the same area in another unit (ft² ↔ m², yd², acres, hectares, etc.). Estimating material uses your coverage rate (area per unit) plus coats and waste to approximate how many units to buy.",
     },
     {
-      q: "How does the material estimate work?",
-      a: "If you enter a coverage rate (area per unit), we estimate units needed as: (area ÷ coverage) × coats × (1 + waste%). This is a simple estimate and does not account for surface texture, compaction, overlap, or product-specific instructions.",
+      q: "How does the material estimate formula work?",
+      a: "If you enter a coverage rate (area per unit), the calculator estimates: units = (area ÷ coverage rate) × coats × (1 + waste% ÷ 100). Your project area is automatically converted into the coverage rate’s area unit before the calculation.",
     },
     {
-      q: "Does the calculator preserve decimals?",
-      a: "Yes. We parse and compute using decimal-safe math (not floating point). Optional rounding is display-only and clearly labeled.",
+      q: "Why doesn’t my estimate match the product label exactly?",
+      a: "Labels vary by surface texture, porosity, application method, thickness, and product type (paint vs primer vs sealer, etc.). This tool is math-only based on the numbers you enter. If a label provides multiple rates (smooth vs rough), use the one that matches your surface and scenario.",
     },
     {
-      q: "Can I save the results?",
-      a: "Yes. Your inputs and display settings are saved locally in your browser so you can come back later.",
+      q: "Does the calculator preserve decimals accurately?",
+      a: "Yes. Inputs are parsed and calculated using decimal-safe math (not floating point). If you enable rounding, rounding affects display only. The underlying conversions and estimate math still keep full precision.",
     },
     {
-      q: "Is this good for paint, soil, mulch, gravel, and concrete?",
-      a: "It is useful for the area part of the estimate and for simple coverage rates. For depth-based materials (soil, mulch, gravel, concrete), you may still need a volume calculator based on thickness and material density.",
+      q: "Can I mix units (ft² area with m² coverage labels)?",
+      a: "Yes. You can enter your area in any supported unit and set the coverage rate’s area unit separately. The calculator converts your project area into the coverage unit automatically so the estimate stays consistent with the label.",
+    },
+    {
+      q: "Can I build my total coverage area from multiple surfaces?",
+      a: "Yes. Use the Coverage Area Builder to add multiple surfaces (and optional openings) and apply allowances like overlap and waste. The builder’s final total becomes the coverage area used for conversion and estimating.",
+    },
+    {
+      q: "Is this tool good for mulch, gravel, soil, or concrete?",
+      a: "It helps with area conversion and simple “area per unit” estimating. But many bulk materials are typically bought by volume (cubic yards/meters) based on depth. For those projects, a depth-based volume calculator is usually a better fit.",
+    },
+    {
+      q: "Can I save or export results?",
+      a: "Your inputs and display settings are saved locally in your browser so you can come back later. You can also use Print / Save PDF to export what you see.",
     },
   ];
 
@@ -52,12 +64,11 @@ export default function FAQ() {
               </span>
             </summary>
 
-            <div className="mt-2 text-slate-700 leading-relaxed max-w-prose">
-              {f.a}
-            </div>
+            <div className="mt-2 text-slate-700 leading-relaxed">{f.a}</div>
           </details>
         ))}
       </div>
+
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}

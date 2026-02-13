@@ -13,14 +13,17 @@ type ToolCategory = {
 export default function Footer() {
   const year = 2026;
 
-  // Landing-page constraint: no tool links yet.
-  // Keep the same layout/card structure, but render non-navigating placeholders.
   const categories: ToolCategory[] = [
     {
       title: "Explore coverage tools",
       cardClassName: "lg:col-span-2",
       listClassName: "grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1",
-      items: [],
+      items: [
+        {
+          label: "Paint Coverage Calculator",
+          to: "/paint-coverage-calculator",
+        },
+      ],
     },
   ];
 
@@ -59,7 +62,6 @@ export default function Footer() {
                 >
                   {cat.items.length === 0 ? (
                     <li className="min-w-0">
-                      {/* TO WIRE LATER: keep visual language, no navigation */}
                       <button
                         type="button"
                         className="block w-full text-left text-slate-300 hover:text-white hover:underline underline-offset-4 transition-colors cursor-pointer whitespace-normal break-words"
@@ -72,15 +74,12 @@ export default function Footer() {
                   ) : (
                     cat.items.map((item) => (
                       <li key={item.label} className="min-w-0">
-                        {/* TO WIRE LATER: keep visual language, no navigation */}
-                        <button
-                          type="button"
-                          onClick={(e) => e.preventDefault()}
+                        <Link
+                          to={item.to}
                           className="block w-full text-left text-slate-300 hover:text-white hover:underline underline-offset-4 transition-colors cursor-pointer whitespace-normal break-words"
-                          aria-disabled="true"
                         >
                           {item.label}
-                        </button>
+                        </Link>
                       </li>
                     ))
                   )}

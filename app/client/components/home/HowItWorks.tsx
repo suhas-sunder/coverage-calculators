@@ -19,13 +19,12 @@ export default function HowItWorks() {
                   How the coverage calculator works
                 </h2>
                 <p className="text-center sm:text-left mt-2 text-slate-600 leading-7 max-w-2xl">
-                  This tool helps you do two things with the same set of inputs:
-                  convert an area between common units and estimate how many
-                  units of material you need when you have a coverage rate. You
-                  enter an area, pick the unit it is currently written in,
-                  choose a target unit for the headline output, and optionally
-                  add a coverage rate to estimate material quantity with coats
-                  and waste.
+                  Use this tool for two practical jobs: convert an area between
+                  units (ft², m², yd², acres, hectares, and more) and estimate
+                  how many units of material you need when a product label gives
+                  a coverage rate. Enter your area and its unit, choose a target
+                  unit for the headline conversion, and optionally enter a
+                  coverage rate with coats and waste to get a buy-list estimate.
                 </p>
               </div>
 
@@ -104,11 +103,10 @@ export default function HowItWorks() {
                   </div>
                   <div className="min-w-0">
                     <h3 className="text-xl font-extrabold text-sky-800 tracking-tight">
-                      Examples
+                      Examples people actually use
                     </h3>
                     <p className="mt-1 text-slate-600">
-                      Common real-world scenarios and the exact way to use this
-                      calculator.
+                      Real inputs, common labels, and the exact settings to use.
                     </p>
                   </div>
                 </div>
@@ -116,69 +114,176 @@ export default function HowItWorks() {
                 <div className="mt-4 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                     <div className="text-sm font-bold text-slate-900">
-                      Paint label in m², plan in ft²
+                      Interior paint, two coats (ft² → gallons)
                     </div>
-                    <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                      <li>Enter your room area (example: 850).</li>
-                      <li>Set the area unit to Square feet (ft²).</li>
-                      <li>Convert to Square meters (m²).</li>
+                    <div className="mt-2 text-sm text-slate-700 leading-7">
+                      <div className="font-semibold text-slate-900">
+                        Scenario:
+                      </div>
+                      You measured wall area at{" "}
+                      <span className="font-semibold text-slate-900">
+                        850 ft²
+                      </span>
+                      . The label says{" "}
+                      <span className="font-semibold text-slate-900">
+                        350 ft² per gallon
+                      </span>
+                      . You want 2 coats and a small buffer.
+                    </div>
+                    <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700">
                       <li>
-                        Optional: enter a coverage rate that matches the label
-                        unit (example: 10 m² per unit).
+                        Enter <span className="font-semibold">850</span> and set
+                        unit to <span className="font-semibold">ft²</span>.
+                      </li>
+                      <li>
+                        (Optional) Convert to{" "}
+                        <span className="font-semibold">m²</span> if the label
+                        is metric.
+                      </li>
+                      <li>
+                        Coverage rate:{" "}
+                        <span className="font-semibold">350</span> with rate
+                        unit <span className="font-semibold">ft²</span>.
+                      </li>
+                      <li>
+                        Coats: <span className="font-semibold">2</span>. Waste:{" "}
+                        <span className="font-semibold">10%</span>. Unit:{" "}
+                        <span className="font-semibold">Gallons</span>.
                       </li>
                     </ol>
                   </div>
 
                   <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                     <div className="text-sm font-bold text-slate-900">
-                      Yard project written in m², supplier quotes in yd²
+                      Lawn seed label in m² (ft² → m²)
                     </div>
-                    <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                      <li>Enter your plan area (example: 40).</li>
-                      <li>Set the area unit to Square meters (m²).</li>
-                      <li>Convert to Square yards (yd²).</li>
+                    <div className="mt-2 text-sm text-slate-700 leading-7">
+                      <div className="font-semibold text-slate-900">
+                        Scenario:
+                      </div>
+                      A yard plan is{" "}
+                      <span className="font-semibold text-slate-900">
+                        1,200 ft²
+                      </span>
+                      . The seed bag is priced by coverage in{" "}
+                      <span className="font-semibold text-slate-900">m²</span>.
+                    </div>
+                    <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700">
                       <li>
-                        Use the breakdown cards to sanity-check against ft² or
-                        acres if needed.
+                        Enter <span className="font-semibold">1,200</span> and
+                        set unit to <span className="font-semibold">ft²</span>.
+                      </li>
+                      <li>
+                        Convert to <span className="font-semibold">m²</span>.
+                      </li>
+                      <li>
+                        Use the headline m² value to match bag options (no
+                        coverage rate needed).
+                      </li>
+                      <li>
+                        Sanity-check with the breakdown (yd² is often used in
+                        landscaping quotes).
                       </li>
                     </ol>
                   </div>
 
                   <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                     <div className="text-sm font-bold text-slate-900">
-                      Multi-coat finish planning
+                      Patio sealer (m² → liters/units)
                     </div>
-                    <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                      <li>Enter the area and select the correct unit.</li>
+                    <div className="mt-2 text-sm text-slate-700 leading-7">
+                      <div className="font-semibold text-slate-900">
+                        Scenario:
+                      </div>
+                      Your patio is{" "}
+                      <span className="font-semibold text-slate-900">
+                        40 m²
+                      </span>
+                      . The sealer says{" "}
+                      <span className="font-semibold text-slate-900">
+                        12 m² per unit
+                      </span>
+                      , one coat, and you want a small buffer.
+                    </div>
+                    <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700">
                       <li>
-                        Enter the coverage rate from the product label (example:
-                        350 ft² per unit).
+                        Enter <span className="font-semibold">40</span> and set
+                        unit to <span className="font-semibold">m²</span>.
                       </li>
-                      <li>Set Coats to 2 if you are doing two coats.</li>
                       <li>
-                        Add a waste buffer (example: 10%) if you want a planning
-                        margin.
+                        Coverage rate: <span className="font-semibold">12</span>{" "}
+                        with rate unit <span className="font-semibold">m²</span>
+                        .
+                      </li>
+                      <li>
+                        Coats: <span className="font-semibold">1</span>. Waste:{" "}
+                        <span className="font-semibold">5%</span>.
+                      </li>
+                      <li>
+                        Material unit:{" "}
+                        <span className="font-semibold">Units</span> (or Liters
+                        if you treat one “unit” as 1 L).
                       </li>
                     </ol>
                   </div>
 
                   <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                     <div className="text-sm font-bold text-slate-900">
-                      Large land areas (acres and hectares)
+                      Big areas (acres/hectares → ft²/m²)
                     </div>
-                    <ol className="mt-2 list-decimal pl-5 space-y-2 text-sm text-slate-700">
-                      <li>Enter the area (example: 2.5).</li>
-                      <li>Select Acres or Hectares as your input unit.</li>
+                    <div className="mt-2 text-sm text-slate-700 leading-7">
+                      <div className="font-semibold text-slate-900">
+                        Scenario:
+                      </div>
+                      You’re comparing pricing across sources:{" "}
+                      <span className="font-semibold text-slate-900">
+                        2.5 acres
+                      </span>{" "}
+                      versus a quote written in{" "}
+                      <span className="font-semibold text-slate-900">m²</span>.
+                    </div>
+                    <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700">
                       <li>
-                        Convert to m² or ft² to compare against product coverage
-                        specs.
+                        Enter <span className="font-semibold">2.5</span> and set
+                        unit to <span className="font-semibold">Acres</span>.
                       </li>
                       <li>
-                        If your output looks tiny, you likely selected the wrong
-                        input unit.
+                        Convert to <span className="font-semibold">m²</span> or{" "}
+                        <span className="font-semibold">ft²</span> for product
+                        specs and contractor comparisons.
+                      </li>
+                      <li>
+                        If your result looks tiny, you probably selected the
+                        wrong input unit.
+                      </li>
+                      <li>
+                        Use the breakdown to cross-check against hectares when
+                        working with metric land listings.
                       </li>
                     </ol>
                   </div>
+                </div>
+
+                <div className="mt-4 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
+                  <div className="text-sm font-bold text-slate-900">
+                    Quick rule for matching labels
+                  </div>
+                  <p className="mt-2 text-sm text-slate-700 leading-7">
+                    If a product label says{" "}
+                    <span className="font-semibold text-slate-900">
+                      “covers X ft² per unit”
+                    </span>
+                    , set the coverage rate unit to{" "}
+                    <span className="font-semibold text-slate-900">ft²</span>.
+                    If it says{" "}
+                    <span className="font-semibold text-slate-900">
+                      “covers Y m² per unit”
+                    </span>
+                    , set the rate unit to{" "}
+                    <span className="font-semibold text-slate-900">m²</span>.
+                    The tool will convert your project area into that unit
+                    automatically before estimating.
+                  </p>
                 </div>
               </div>
             </div>
@@ -465,7 +570,6 @@ export default function HowItWorks() {
                     </ul>
                   </div>
 
-                  {/* Examples block for Coverage estimating */}
                   <div className="mt-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                     <div className="text-sm font-bold text-slate-900">
                       Coverage estimate examples
@@ -515,7 +619,6 @@ export default function HowItWorks() {
               </div>
             </div>
 
-            {/* Dark callout block like the reference file */}
             <div className="relative overflow-hidden rounded-3xl bg-slate-900 text-white p-6 sm:p-7">
               <div
                 aria-hidden="true"

@@ -24,8 +24,8 @@ export default function ToolFit() {
                 Who this tool is for
               </h2>
               <p className="text-center sm:text-left mt-2 text-slate-600 leading-7 max-w-2xl">
-                Quick clarity on when this coverage calculator is the right
-                choice, and when it is not.
+                Use this page for two things: convert area units and estimate
+                how many units of material you need from a coverage label.
               </p>
             </div>
 
@@ -35,9 +35,10 @@ export default function ToolFit() {
                   This tool is for
                 </div>
                 <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                  Converting a known area into the unit you need and estimating
-                  how many units of material to plan for using a coverage rate,
-                  coats, and a waste buffer.
+                  People who already have an area (from a room plan, yard
+                  sketch, blueprint, or measurement) and need it in a different
+                  unit, plus a quick quantity estimate using an “area per unit”
+                  coverage rate.
                 </p>
               </div>
 
@@ -46,9 +47,9 @@ export default function ToolFit() {
                   Why this tool is different
                 </div>
                 <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                  It keeps decimal precision end-to-end and shows the same area
-                  in multiple units so you can sanity-check before buying
-                  material.
+                  It shows the same area in multiple units (ft², m², yd², acres,
+                  hectares) so you can catch unit mismatches, and it keeps
+                  decimal precision end-to-end (rounding is display-only).
                 </p>
               </div>
 
@@ -57,38 +58,36 @@ export default function ToolFit() {
                   This tool is not for
                 </div>
                 <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                  It is not a product-specific estimator for surface conditions,
-                  depth targets, compaction, or local requirements. Use your
-                  product label guidance to choose the right coverage rate.
+                  Hyper-specific product modeling (surface texture, porosity,
+                  depth targets, compaction, thickness, application technique).
+                  If the product label gives multiple coverage rates, pick the
+                  rate that matches your exact scenario.
                 </p>
               </div>
 
               <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-5 hover:ring-sky-200/80 transition">
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  When to use another tool
+                  If you need a paint-specific calculator
                 </div>
                 <p className="mt-2 text-sm text-slate-700 leading-relaxed">
-                  If you only need a fast unit conversion with no estimating,
-                  use the{" "}
-                  <span className="font-semibold text-slate-900">
-                    Area Converter
-                  </span>{" "}
-                  instead.
+                  For paint projects, use the dedicated paint tool. This general
+                  calculator stays flexible for different materials, while the
+                  paint tool can be framed around paint-first inputs and labels.
                 </p>
 
                 <div className="mt-3">
                   <Link
-                    to="/area-converter"
+                    to="/paint-coverage-calculator"
                     className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-50 hover:border-sky-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
                   >
-                    Open Area Converter
+                    Open Paint Coverage Calculator
                     <span aria-hidden="true">→</span>
                   </Link>
                 </div>
 
                 <p className="mt-2 text-xs text-slate-500 leading-relaxed">
-                  If that page does not exist on your site yet, remove this
-                  card.
+                  If you need another specialized tool later, use the site
+                  navigation to browse the growing tool list.
                 </p>
               </div>
             </div>
@@ -99,17 +98,48 @@ export default function ToolFit() {
               </div>
               <ul className="mt-2 list-disc pl-5 space-y-2 text-sm text-slate-700">
                 <li>
-                  A paint label lists coverage in ft² per gallon, but your plan
-                  is written in m².
+                  You measured <span className="font-semibold">850 ft²</span>,
+                  but the label coverage is in{" "}
+                  <span className="font-semibold">m² per unit</span>, so you
+                  convert first to match the label.
                 </li>
                 <li>
-                  You are planning two coats and want a built-in waste margin.
+                  You have coverage like{" "}
+                  <span className="font-semibold">350 ft² per gallon</span> (or{" "}
+                  <span className="font-semibold">12 m² per unit</span>) and
+                  want a quick plan with{" "}
+                  <span className="font-semibold">2 coats</span> and{" "}
+                  <span className="font-semibold">10%</span> waste.
                 </li>
                 <li>
-                  You want a quick cross-check between ft², m², yd², acres, or
-                  hectares to catch a unit mismatch.
+                  A quote is in <span className="font-semibold">yd²</span> but
+                  your plan is in <span className="font-semibold">ft²</span>, so
+                  you convert and sanity-check with the breakdown cards.
                 </li>
               </ul>
+            </div>
+
+            <div className="mt-2 rounded-2xl bg-sky-50 ring-1 ring-sky-200/70 p-5">
+              <div className="text-sm font-bold text-slate-900">
+                Quick decision rule
+              </div>
+              <p className="mt-2 text-sm text-slate-700 leading-relaxed">
+                If you have a single total area and a coverage label, use this
+                page. If you want a paint-first flow, jump to{" "}
+                <span className="font-semibold text-slate-900">
+                  Paint Coverage Calculator
+                </span>
+                .
+              </p>
+              <div className="mt-3">
+                <Link
+                  to="/paint-coverage-calculator"
+                  className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-900 hover:bg-sky-50 hover:border-sky-200 transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white"
+                >
+                  Go to Paint Coverage Calculator
+                  <span aria-hidden="true">→</span>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
