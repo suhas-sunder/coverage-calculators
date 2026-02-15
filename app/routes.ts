@@ -5,6 +5,7 @@ export default [
   index("routes/home.tsx"),
   route("coverage-calculator", "routes/coverage-calculator.tsx"),
   route("paint-coverage-calculator", "routes/paint-coverage-calculator.tsx"),
+  route("mulch-coverage-calculator", "routes/mulch-coverage-calculator.tsx"),
 
   // Legal / misc
   route("terms-of-service", "routes/terms-of-service.tsx"),

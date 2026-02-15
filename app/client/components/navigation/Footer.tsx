@@ -23,6 +23,10 @@ export default function Footer() {
           label: "Paint Coverage Calculator",
           to: "/paint-coverage-calculator",
         },
+        {
+          label: "Mulch Coverage Calculator",
+          to: "/mulch-coverage-calculator",
+        },
       ],
     },
   ];

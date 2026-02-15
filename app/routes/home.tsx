@@ -3,6 +3,7 @@ import type { Route } from "./+types/home";
 import HowItWorks from "~/client/components/home/HowItWorks";
 import FAQ from "~/client/components/home/FAQ";
 import ToolFit from "~/client/components/home/ToolFit";
+import Rounding from "~/client/components/home/Rounding";
 
 export const meta: Route.MetaFunction = () => [
   {
@@ -1374,7 +1375,7 @@ export default function Home() {
             </div>
           </div>
 
-          <p className="hidden my-1 md:flex w-full text-left text-sm md:text-base text-slate-600 leading-relaxed">
+          <p className="hidden md:flex w-full text-left text-sm md:text-base text-slate-600 leading-relaxed">
             Convert area units and estimate material needs using a coverage rate
             (paint, mulch, soil, gravel, concrete) with coats and waste.
           </p>
@@ -1383,7 +1384,7 @@ export default function Home() {
             Controls how many decimals to show when rounding is enabled.
           </p>
 
-          <div className="grid gap-y-3 gap-x-5 lg:grid-cols-12 mt-4">
+          <div className="grid gap-y-3 gap-x-5 lg:grid-cols-12 mt-1">
             <div className="lg:col-span-7">
               <label className="block text-sm font-semibold text-slate-800 mb-2">
                 Coverage Area
@@ -2106,41 +2107,6 @@ export default function Home() {
                 )}
               </div>
             </details>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3 mt-3">
-            <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
-              <input
-                type="checkbox"
-                checked={roundForDisplay}
-                onChange={(e) => setRoundForDisplay(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white cursor-pointer"
-              />
-              Round results for display
-            </label>
-
-            <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
-              <span className="sr-only">Display decimals</span>
-              <select
-                value={displayDecimals}
-                onChange={(e) =>
-                  setDisplayDecimals(safeDisplayDecimals(e.target.value, 2))
-                }
-                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
-                aria-describedby={decimalsHelpId}
-                aria-label="Display decimals"
-              >
-                <option value={0}>0 decimals</option>
-                <option value={2}>2 decimals</option>
-                <option value={4}>4 decimals</option>
-                <option value={6}>6 decimals</option>
-              </select>
-            </label>
-
-            <span className="sr-only">
-              Rounding only affects what you see. Conversions use exact unit
-              definitions.
-            </span>
           </div>
 
           <div className="mt-3 mb-4 rounded-xl bg-slate-50 p-4">

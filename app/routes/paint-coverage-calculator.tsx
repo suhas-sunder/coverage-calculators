@@ -3,6 +3,7 @@ import type { Route } from "./+types/paint-coverage-calculator";
 import HowItWorks from "~/client/components/paint-coverage-calculator/HowItWorks";
 import ToolFit from "~/client/components/paint-coverage-calculator/ToolFit";
 import FAQ from "~/client/components/paint-coverage-calculator/FAQ";
+import Rounding from "~/client/components/home/Rounding";
 
 export const meta: Route.MetaFunction = () => [
   {
@@ -1519,7 +1520,7 @@ export default function PaintCoverageCalculator() {
       <section className="mx-auto max-w-6xl px-6 pb-8 sm:mt-6 sm:pb-12">
         <div className="rounded-2xl bg-white sm:shadow-sm sm:border border-slate-200 sm:px-8">
           <div className="flex flex-col pt-2 sm:pt-4 pb-1 sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="mb-1 text-center sm:text-left text-2xl sm:text-3xl md:text-4xl capitalize font-bold text-sky-800 tracking-tight">
+            <h1 className=" text-center sm:text-left text-2xl sm:text-3xl md:text-4xl capitalize font-bold text-sky-800 tracking-tight">
               Paint Coverage Calculator
             </h1>
 
@@ -1737,7 +1738,7 @@ export default function PaintCoverageCalculator() {
                       </button>
                     </div>
 
-                    <div className="mt-3 space-y-3">
+                    <div className="mt-1 space-y-3">
                       {doors.length === 0 ? (
                         <div className="text-sm text-slate-600">
                           Optional. Add doors if you are not painting them.
@@ -1871,7 +1872,7 @@ export default function PaintCoverageCalculator() {
                       </button>
                     </div>
 
-                    <div className="mt-3 space-y-3">
+                    <div className="mt-1 space-y-3">
                       {windows.length === 0 ? (
                         <div className="text-sm text-slate-600">
                           Optional. Add windows if you are not painting frames
@@ -2621,42 +2622,7 @@ export default function PaintCoverageCalculator() {
             >
               Calculate
             </button>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 mt-3 pb-5">
-            <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
-              <input
-                type="checkbox"
-                checked={roundForDisplay}
-                onChange={(e) => setRoundForDisplay(e.target.checked)}
-                className="h-4 w-4 rounded border-slate-300 text-sky-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white cursor-pointer"
-              />
-              Round results for display
-            </label>
-
-            <label className="inline-flex items-center gap-2 text-sm font-medium text-slate-700 select-none">
-              <span className="sr-only">Display decimals</span>
-              <select
-                value={displayDecimals}
-                onChange={(e) =>
-                  setDisplayDecimals(safeDisplayDecimals(e.target.value, 2))
-                }
-                className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-semibold text-slate-900 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-100 focus-visible:ring-sky-400 cursor-pointer hover:border-sky-200 hover:bg-sky-50 transition"
-                aria-label="Display decimals"
-              >
-                <option value={0}>0 decimals</option>
-                <option value={2}>2 decimals</option>
-                <option value={4}>4 decimals</option>
-                <option value={6}>6 decimals</option>
-              </select>
-            </label>
-
-            <div className="ml-auto text-xs text-slate-600">
-              Area display follows your coverage unit:{" "}
-              <span className="font-semibold text-slate-800">
-                {PERIOD_LABEL[coverageUnit]}
-              </span>
-            </div>
-          </div>
+          </div>         
         </div>
       </section>
 

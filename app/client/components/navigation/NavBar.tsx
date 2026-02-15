@@ -26,7 +26,6 @@ export default function NavBar() {
   // Focus management when opening
   useEffect(() => {
     if (!mobileOpen) return;
-    // Prefer focusing first actionable item in panel
     setTimeout(() => {
       (firstLinkRef.current ?? closeBtnRef.current)?.focus?.();
     }, 0);
@@ -41,6 +40,12 @@ export default function NavBar() {
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [mobileOpen]);
+
+  const desktopLinkClass =
+    "rounded-lg border border-sky-800/60 bg-sky-900/40 px-3 py-1.5 text-sm font-semibold text-sky-100 hover:bg-sky-800/60 hover:text-white transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-950";
+
+  const mobileLinkClass =
+    "block rounded-xl border border-sky-800/60 bg-sky-900/30 px-4 py-3 text-base font-semibold text-sky-100 hover:bg-sky-800/60 hover:text-white transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-950";
 
   return (
     <header className="bg-sky-950 text-slate-200 border-b border-sky-900/60 shadow-sm">
@@ -61,7 +66,7 @@ export default function NavBar() {
             />
             <div className="text-left leading-tight">
               <div className="text-base font-bold text-white tracking-tight group-hover:text-sky-200">
-                coveragecalculators<span className="text-sky-300">.com</span>
+                CoverageCalculators<span className="text-sky-300">.com</span>
               </div>
               <div className="text-xs text-sky-200 font-semibold">
                 Coverage and area calculators
@@ -71,11 +76,11 @@ export default function NavBar() {
 
           {/* Desktop nav */}
           <nav className="hidden sm:flex items-center gap-3">
-            <Link
-              to="/paint-coverage-calculator"
-              className="rounded-lg border border-sky-800/60 bg-sky-900/40 px-3 py-1.5 text-sm font-semibold text-sky-100 hover:bg-sky-800/60 hover:text-white transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-950"
-            >
+            <Link to="/paint-coverage-calculator" className={desktopLinkClass}>
               Paint Coverage Calculator
+            </Link>
+            <Link to="/mulch-coverage-calculator" className={desktopLinkClass}>
+              Mulch Coverage Calculator
             </Link>
           </nav>
 
@@ -93,7 +98,7 @@ export default function NavBar() {
               <span className="sr-only">
                 {mobileOpen ? "Close" : "Open"} menu
               </span>
-              {/* Hamburger / X */}
+
               {!mobileOpen ? (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -161,16 +166,18 @@ export default function NavBar() {
               </button>
             </div>
 
-            <nav className="px-4 py-4">
+            <nav className="px-4 py-4 space-y-3">
               <Link
                 to="/paint-coverage-calculator"
                 ref={firstLinkRef}
-                className="block rounded-xl border border-sky-800/60 bg-sky-900/30 px-4 py-3 text-base font-semibold text-sky-100 hover:bg-sky-800/60 hover:text-white transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-sky-950"
+                className={mobileLinkClass}
               >
                 Paint Coverage Calculator
               </Link>
 
-        
+              <Link to="/mulch-coverage-calculator" className={mobileLinkClass}>
+                Mulch Coverage Calculator
+              </Link>
             </nav>
           </div>
         </div>
