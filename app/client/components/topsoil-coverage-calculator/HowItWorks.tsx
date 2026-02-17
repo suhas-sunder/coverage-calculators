@@ -1,5 +1,5 @@
 import { useId } from "react";
-import ShapePreview from "~/client/components/mulch-coverage-calculator/ShapePreview";
+import ShapePreview from "~/client/components/topsoil-coverage-calculator/ShapePreview";
 
 type Shape =
   | "square"
@@ -24,7 +24,7 @@ type UnitSet = {
 const UNIT_SETS: UnitSet[] = [
   {
     id: "us",
-    label: "US-style example set",
+    label: "US example set",
     badge: "Feet + inches + yd³/ft³",
     dimUnit: "ft",
     depthUnit: "in",
@@ -85,7 +85,7 @@ function Badge(props: { children: React.ReactNode }) {
   );
 }
 
-export default function HowItWorksMulch() {
+export default function HowItWorksTopsoil() {
   const CardShell = (p: {
     icon: React.ReactNode;
     title: string;
@@ -169,7 +169,7 @@ export default function HowItWorksMulch() {
                 </div>
                 <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                   <div className="text-sm font-bold text-slate-900">
-                    Why it matters in real life
+                    Why it matters for topsoil
                   </div>
                   <p className="mt-2 text-sm text-slate-700 leading-7">
                     {p.whyMatters}
@@ -196,7 +196,7 @@ export default function HowItWorksMulch() {
               <div className="mt-4">
                 <Expandable
                   title="Calculations used (technical)"
-                  subtitle="Collapsed by default so it stays readable. Open if you want the exact math."
+                  subtitle="Open if you want the exact geometry and unit conversions."
                 >
                   <ul className="list-disc pl-5 space-y-2">
                     {p.formulas.map((f) => (
@@ -218,8 +218,8 @@ export default function HowItWorksMulch() {
 
               <div className="mt-4">
                 <Expandable
-                  title="Quick checks to avoid mistakes (technical)"
-                  subtitle="These prevent the classic 2x, 4x, and 12x errors."
+                  title="Quick checks to avoid expensive mistakes (technical)"
+                  subtitle="These prevent the classic unit and measurement errors that wreck bag counts and bulk orders."
                 >
                   <ul className="list-disc pl-5 space-y-2">
                     {p.checks.map((c, idx) => (
@@ -252,25 +252,25 @@ export default function HowItWorksMulch() {
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0">
                 <h2 className="text-center sm:text-left text-3xl sm:text-4xl font-extrabold text-sky-800 tracking-tight leading-tight">
-                  How the mulch coverage calculator works
+                  How the topsoil coverage calculator works
                 </h2>
                 <p className="text-center sm:text-left mt-2 text-slate-600 leading-7 max-w-3xl">
-                  This calculator turns a measured footprint into mulch volume.
-                  You pick a shape, enter dimensions in your preferred units,
-                  and choose a depth. The tool computes area from the shape,
-                  then computes volume as area × depth, and finally converts the
-                  same volume into practical buying units. The preview diagrams
-                  exist to stop the high-cost mistakes: radius versus diameter,
-                  triangle height versus slanted side, and border cutouts that
-                  must be subtracted.
+                  This calculator converts a measured footprint and a planned
+                  topsoil depth into a buyable volume. You pick the shape that
+                  matches your lawn or yard area, enter dimensions, then enter
+                  the depth of topsoil you plan to add. The tool computes area
+                  from the shape, computes volume as area × depth, applies an
+                  optional waste buffer, then converts the same volume into
+                  common purchase units like cubic yards, cubic feet, cubic
+                  meters, liters, and topsoil bag counts.
                 </p>
               </div>
 
               <div className="hidden sm:flex flex-col items-end gap-2 shrink-0">
-                <Badge>Shape-driven area math</Badge>
+                <Badge>Topsoil volume, not mulch</Badge>
                 <span className="inline-flex items-center gap-2 rounded-full bg-slate-50 text-slate-700 ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold">
                   <span className="h-2 w-2 rounded-full bg-slate-500" />
-                  Depth → volume → buy list
+                  Area → depth → yd³ / m³ / bags
                 </span>
               </div>
             </div>
@@ -302,10 +302,10 @@ export default function HowItWorksMulch() {
               </div>
               <div className="rounded-2xl bg-white ring-1 ring-slate-200/80 p-4 hover:ring-sky-200/80 transition">
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  OUTPUT
+                  BUY LIST
                 </div>
                 <div className="mt-2 text-sm font-semibold text-slate-900">
-                  yd³ / ft³ / m³ / L
+                  Bulk or bags
                 </div>
               </div>
             </div>
@@ -313,8 +313,8 @@ export default function HowItWorksMulch() {
 
           <div className="mt-10 space-y-6 text-base text-slate-700 leading-7">
             <CardShell
-              title="Scenario-based examples"
-              subtitle="These examples pick units on purpose. The preview diagrams below use the same unit system as the example they are describing."
+              title="Examples you can copy"
+              subtitle="Each example is shaped like a real job. Use it to pick the correct shape, depth units, and the output that matches how you buy topsoil."
               icon={
                 <svg
                   aria-hidden="true"
@@ -333,10 +333,11 @@ export default function HowItWorksMulch() {
               }
             >
               <div className="grid gap-3 sm:grid-cols-2">
+                {/* Example A: US rectangle lawn topdressing */}
                 <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="text-sm font-bold text-slate-900">
-                      Example A (US): rectangle, ft + in, compare bulk vs bags
+                      Example A (US): rectangle lawn topdressing, yd³ for bulk
                     </div>
                     <span className="inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
                       Units: ft (dims) • in (depth)
@@ -344,17 +345,21 @@ export default function HowItWorksMulch() {
                   </div>
 
                   <div className="mt-3 text-sm text-slate-700 leading-7">
-                    <div className="font-semibold text-slate-900">
-                      Scenario:
-                    </div>
-                    You are refreshing mulch along a front walkway bed that is{" "}
-                    <span className="font-semibold text-slate-900">20 ft</span>{" "}
-                    long by{" "}
-                    <span className="font-semibold text-slate-900">8 ft</span>{" "}
-                    wide. You want a{" "}
-                    <span className="font-semibold text-slate-900">3 in</span>{" "}
-                    layer to cover old, faded mulch. You want enough to finish
-                    in one trip.
+                    <div className="font-semibold text-slate-900">Goal:</div>
+                    Add a thin topsoil layer to smooth and level a lawn area
+                    measuring{" "}
+                    <span className="font-semibold text-slate-900">
+                      30 ft
+                    </span>{" "}
+                    by{" "}
+                    <span className="font-semibold text-slate-900">18 ft</span>.
+                    You plan to add{" "}
+                    <span className="font-semibold text-slate-900">0.5 in</span>{" "}
+                    of topsoil and want the answer in{" "}
+                    <span className="font-semibold text-slate-900">
+                      cubic yards
+                    </span>{" "}
+                    for a bulk order.
                   </div>
 
                   <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700 leading-7">
@@ -363,35 +368,36 @@ export default function HowItWorksMulch() {
                     </li>
                     <li>
                       Dimension unit: <span className="font-semibold">ft</span>.
-                      Enter Length <span className="font-semibold">20</span> and
-                      Width <span className="font-semibold">8</span>.
+                      Enter Length <span className="font-semibold">30</span> and
+                      Width <span className="font-semibold">18</span>.
                     </li>
                     <li>
                       Depth unit: <span className="font-semibold">in</span>.
-                      Enter Depth <span className="font-semibold">3</span>.
+                      Enter Depth <span className="font-semibold">0.5</span>.
                     </li>
                     <li>
-                      Waste: <span className="font-semibold">10%</span> if your
-                      edge is uneven or you expect settling.
+                      Waste: <span className="font-semibold">5%</span> if your
+                      lawn edge is irregular or you expect some loss during
+                      spreading.
                     </li>
                     <li>
-                      Read results in <span className="font-semibold">ft³</span>{" "}
-                      for bags and <span className="font-semibold">yd³</span>{" "}
-                      for bulk delivery.
+                      Read results in <span className="font-semibold">yd³</span>{" "}
+                      for ordering.
                     </li>
                   </ol>
 
                   <div className="mt-3 text-sm text-slate-600 leading-7">
-                    Why this example is realistic: many big-box bags are sold in
-                    cubic feet, while bulk is sold in cubic yards. Seeing both
-                    lets you decide if delivery is worth it.
+                    Tip: thin layers are sensitive to depth mistakes. If you
+                    enter 5 inches instead of 0.5 inches, volume jumps 10×.
                   </div>
                 </div>
 
+                {/* Example B: Metric circle raised bed topping */}
                 <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="text-sm font-bold text-slate-900">
-                      Example B (Canada/UK): circle, m + cm, quote in m³
+                      Example B (Metric): round raised bed top-up, m³ for
+                      delivery
                     </div>
                     <span className="inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
                       Units: m (dims) • cm (depth)
@@ -399,16 +405,13 @@ export default function HowItWorksMulch() {
                   </div>
 
                   <div className="mt-3 text-sm text-slate-700 leading-7">
-                    <div className="font-semibold text-slate-900">
-                      Scenario:
-                    </div>
-                    You are mulching a round tree ring in a backyard where you
-                    measure with a metric tape. The ring has a radius of{" "}
-                    <span className="font-semibold text-slate-900">1.2 m</span>{" "}
-                    and you want a{" "}
-                    <span className="font-semibold text-slate-900">7 cm</span>{" "}
-                    top-up. The landscape yard quotes bulk mulch in{" "}
-                    <span className="font-semibold text-slate-900">m³</span>.
+                    <div className="font-semibold text-slate-900">Goal:</div>
+                    Top up a circular raised bed with a measured radius of{" "}
+                    <span className="font-semibold text-slate-900">1.0 m</span>.
+                    You want to add{" "}
+                    <span className="font-semibold text-slate-900">4 cm</span>{" "}
+                    of topsoil and compare your result against a supplier quote
+                    in <span className="font-semibold text-slate-900">m³</span>.
                   </div>
 
                   <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700 leading-7">
@@ -417,54 +420,111 @@ export default function HowItWorksMulch() {
                     </li>
                     <li>
                       Dimension unit: <span className="font-semibold">m</span>.
-                      Enter Radius <span className="font-semibold">1.2</span>.
+                      Enter Radius <span className="font-semibold">1.0</span>.
                     </li>
                     <li>
                       Depth unit: <span className="font-semibold">cm</span>.
-                      Enter Depth <span className="font-semibold">7</span>.
+                      Enter Depth <span className="font-semibold">4</span>.
                     </li>
                     <li>
-                      Waste: <span className="font-semibold">5%</span> if the
-                      bed is not perfectly level or you have roots and bumps.
+                      Waste: <span className="font-semibold">8%</span> if the
+                      surface is rough or you are blending into existing soil.
                     </li>
                     <li>
-                      Read headline in <span className="font-semibold">m³</span>{" "}
-                      for the quote, then check{" "}
-                      <span className="font-semibold">L</span> if you want a
-                      more intuitive number.
+                      Read headline in <span className="font-semibold">m³</span>
+                      , then check <span className="font-semibold">L</span> if
+                      you want a more intuitive number.
                     </li>
                   </ol>
 
                   <div className="mt-3 text-sm text-slate-600 leading-7">
-                    The mistake this prevents: if you accidentally input the
-                    diameter (2.4 m) as the radius, area and volume jump 4×.
+                    Common error: entering diameter as radius makes area and
+                    volume 4× too large.
                   </div>
                 </div>
 
-                {/* NEW: Example C */}
+                {/* Example C: Rectangle border around patio (US), bags */}
                 <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div className="text-sm font-bold text-slate-900">
-                      Example C (General): triangle, yd + in, estimating a
-                      corner wedge
+                      Example C (US): rectangle border around patio, bags for
+                      pickup
                     </div>
                     <span className="inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
-                      Units: yd (dims) • in (depth)
+                      Units: ft (dims) • in (depth)
                     </span>
                   </div>
 
                   <div className="mt-3 text-sm text-slate-700 leading-7">
-                    <div className="font-semibold text-slate-900">
-                      Scenario:
+                    <div className="font-semibold text-slate-900">Goal:</div>
+                    Build up soil around a patio by adding topsoil to the
+                    surrounding border area only. The outer footprint is{" "}
+                    <span className="font-semibold text-slate-900">
+                      22 ft × 14 ft
+                    </span>{" "}
+                    and the patio cutout is{" "}
+                    <span className="font-semibold text-slate-900">
+                      18 ft × 10 ft
+                    </span>
+                    . You plan to add{" "}
+                    <span className="font-semibold text-slate-900">2 in</span>{" "}
+                    of topsoil and you want a bag count for a store run.
+                  </div>
+
+                  <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700 leading-7">
+                    <li>
+                      Shape:{" "}
+                      <span className="font-semibold">Rectangle border</span>
+                    </li>
+                    <li>
+                      Dimension unit: <span className="font-semibold">ft</span>.
+                      Enter outer (22, 14) and inner (18, 10).
+                    </li>
+                    <li>
+                      Depth unit: <span className="font-semibold">in</span>.
+                      Enter Depth <span className="font-semibold">2</span>.
+                    </li>
+                    <li>
+                      Waste: <span className="font-semibold">10%</span> if the
+                      edge transitions are not straight.
+                    </li>
+                    <li>
+                      Read results in <span className="font-semibold">ft³</span>{" "}
+                      and check bag counts.
+                    </li>
+                  </ol>
+
+                  <div className="mt-3 text-sm text-slate-600 leading-7">
+                    Why border matters: if you ignore the patio cutout, you
+                    overbuy by the entire patio area.
+                  </div>
+                </div>
+
+                {/* Example D: Triangle slope fill (Metric), liters */}
+                <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="text-sm font-bold text-slate-900">
+                      Example D (Metric): triangular low spot, liters for bag
+                      labels
                     </div>
-                    You have a corner wedge bed by a patio. It measures{" "}
-                    <span className="font-semibold text-slate-900">5 yd</span>{" "}
-                    along the back edge (base) and{" "}
-                    <span className="font-semibold text-slate-900">3 yd</span>{" "}
-                    perpendicular out from the corner (height). You want a{" "}
-                    <span className="font-semibold text-slate-900">2.5 in</span>{" "}
-                    mulch top-up and you want the result in the same
-                    bulk-friendly units you see in landscape quotes.
+                    <span className="inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
+                      Units: m (dims) • cm (depth) • L (output)
+                    </span>
+                  </div>
+
+                  <div className="mt-3 text-sm text-slate-700 leading-7">
+                    <div className="font-semibold text-slate-900">Goal:</div>
+                    Fix a triangular low area near a fence corner. The base is{" "}
+                    <span className="font-semibold text-slate-900">
+                      2.6 m
+                    </span>{" "}
+                    and the perpendicular height is{" "}
+                    <span className="font-semibold text-slate-900">1.4 m</span>.
+                    You want to add{" "}
+                    <span className="font-semibold text-slate-900">5 cm</span>{" "}
+                    of topsoil and match store bags labeled in{" "}
+                    <span className="font-semibold text-slate-900">liters</span>
+                    .
                   </div>
 
                   <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700 leading-7">
@@ -472,91 +532,27 @@ export default function HowItWorksMulch() {
                       Shape: <span className="font-semibold">Triangle</span>
                     </li>
                     <li>
-                      Dimension unit: <span className="font-semibold">yd</span>.
-                      Enter Base <span className="font-semibold">5</span> and
-                      Height <span className="font-semibold">3</span>.
-                    </li>
-                    <li>
-                      Depth unit: <span className="font-semibold">in</span>.
-                      Enter Depth <span className="font-semibold">2.5</span>.
-                    </li>
-                    <li>
-                      Waste: <span className="font-semibold">8%</span> if the
-                      edges are irregular or the wedge is “close enough” rather
-                      than perfectly triangular.
-                    </li>
-                    <li>
-                      Read results in <span className="font-semibold">yd³</span>{" "}
-                      for bulk, and cross-check{" "}
-                      <span className="font-semibold">ft³</span> if you’re
-                      sanity-checking against bags.
-                    </li>
-                  </ol>
-
-                  <div className="mt-3 text-sm text-slate-600 leading-7">
-                    Why this example is realistic: landscapers often think in
-                    yards for both layout and bulk material. A wedge bed is
-                    where people most often confuse “height” with a sloped edge,
-                    so use the diagram and measure perpendicular to the base.
-                  </div>
-                </div>
-
-                {/* NEW: Example D (Litres output) */}
-                <div className="rounded-2xl bg-slate-50 ring-1 ring-slate-200 p-5">
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="text-sm font-bold text-slate-900">
-                      Example D (General): square, cm + cm, final answer in
-                      Litres
-                    </div>
-                    <span className="inline-flex items-center gap-2 rounded-full bg-white ring-1 ring-slate-200 px-3 py-1 text-xs font-semibold text-slate-700">
-                      Units: cm (dims) • cm (depth) • L (output)
-                    </span>
-                  </div>
-
-                  <div className="mt-3 text-sm text-slate-700 leading-7">
-                    <div className="font-semibold text-slate-900">
-                      Scenario:
-                    </div>
-                    You are filling a raised planter that is a neat square. The
-                    inside footprint is{" "}
-                    <span className="font-semibold text-slate-900">240 cm</span>{" "}
-                    by{" "}
-                    <span className="font-semibold text-slate-900">240 cm</span>
-                    . You want a{" "}
-                    <span className="font-semibold text-slate-900">6 cm</span>{" "}
-                    mulch layer, and you want the result in{" "}
-                    <span className="font-semibold text-slate-900">Litres</span>{" "}
-                    because local garden centers list bag volumes in liters.
-                  </div>
-
-                  <ol className="mt-3 list-decimal pl-5 space-y-2 text-sm text-slate-700 leading-7">
-                    <li>
-                      Shape: <span className="font-semibold">Square</span>
-                    </li>
-                    <li>
-                      Dimension unit: <span className="font-semibold">cm</span>.
-                      Enter Side <span className="font-semibold">240</span>.
+                      Dimension unit: <span className="font-semibold">m</span>.
+                      Enter Base <span className="font-semibold">2.6</span> and
+                      Height <span className="font-semibold">1.4</span>.
                     </li>
                     <li>
                       Depth unit: <span className="font-semibold">cm</span>.
-                      Enter Depth <span className="font-semibold">6</span>.
+                      Enter Depth <span className="font-semibold">5</span>.
                     </li>
                     <li>
-                      Waste: <span className="font-semibold">5%</span> if you
-                      expect settling or you’ll spill during spreading.
+                      Waste: <span className="font-semibold">12%</span> if your
+                      triangle is an approximation and edges are irregular.
                     </li>
                     <li>
                       Set output to <span className="font-semibold">L</span> and
-                      use the headline liters number to match bag options (for
-                      example 40 L bags).
+                      compare with bag sizes (for example 25 L, 40 L, 56 L).
                     </li>
                   </ol>
 
                   <div className="mt-3 text-sm text-slate-600 leading-7">
-                    Why liters matters: when bags are labeled 40 L, 56 L, or 70
-                    L, a liters output prevents manual conversions and makes it
-                    obvious how many bags you need once you divide by the bag
-                    size and round up.
+                    Triangle reminder: height must be perpendicular to the base,
+                    not a sloped edge.
                   </div>
                 </div>
               </div>
@@ -568,63 +564,58 @@ export default function HowItWorksMulch() {
                 >
                   <ul className="list-disc pl-5 space-y-2">
                     <li>
-                      Convert all dimensions into a common base length unit
-                      derived from the chosen selectors (ft/in/yd or m/cm).
+                      Convert dimensions into a consistent base unit using your
+                      selectors (ft/in/yd or m/cm).
                     </li>
                     <li>
-                      Compute area A for the selected shape
-                      (square/rectangle/circle/ triangle or border variant).
+                      Compute footprint area A based on the selected shape
+                      (including border variants that subtract cutouts).
                     </li>
                     <li>
-                      Convert depth into that same base length unit and compute
-                      volume V = A × depth.
+                      Convert depth into the same base system and compute volume
+                      V = A × depth.
                     </li>
                     <li>
                       Apply waste as a multiplier: Vw = V × (1 + waste% ÷ 100).
                     </li>
                     <li>
-                      Convert Vw into yd³, ft³, m³, and L (and show whichever
-                      your UI prioritizes).
-                    </li>
-                    <li>
-                      If bag sizing is used: bags_exact = Vw ÷ bag_volume, and
-                      the buy count is rounded up.
+                      Convert Vw into yd³, ft³, m³, and liters, and show bag
+                      counts by dividing by bag volume and rounding up.
                     </li>
                   </ul>
                 </Expandable>
               </div>
             </CardShell>
 
-            {/* EXPLAIN ALL SHAPES TWICE: once in US set, once in metric set */}
+            {/* SHAPES EXPLAINED IN TWO UNIT SYSTEMS */}
             {UNIT_SETS.map((unitSet) => (
               <div key={unitSet.id} className="space-y-6">
                 <ShapeExplainer
                   unitSet={unitSet}
                   shape="rectangle"
-                  title="Rectangle"
-                  whenToUse="Use Rectangle for straight-edged beds: long borders along a fence, a strip beside a driveway, or a simple garden box."
-                  diagramMeans={`Length and Width are the two ground measurements that define the footprint. In this section the diagram labels are shown in ${unitSet.dimUnit}.`}
-                  whyMatters="The rectangle formula is simple, but the real-world errors are not: wrong unit selectors, swapping a depth unit, or measuring the outside edge when you really meant the inside edge."
+                  title={`Rectangle`}
+                  whenToUse="Use Rectangle for lawns, strips, and beds you can measure as length × width: leveling a section of lawn, topping a garden bed, or building up a flat area."
+                  diagramMeans={`Length and Width are ground measurements that define the footprint. In this section the diagram labels are shown in ${unitSet.dimUnit}.`}
+                  whyMatters="Topsoil projects often use thin layers. A small depth error (or wrong depth unit selector) can swing volume dramatically and change whether you should buy bulk or bags."
                   inputs={[
                     {
                       label: `Length (${unitSet.dimUnit})`,
-                      meaning:
-                        "Measured along the long edge of the bed on the ground.",
+                      meaning: "Measured along the long edge on the ground.",
                     },
                     {
                       label: `Width (${unitSet.dimUnit})`,
                       meaning:
-                        "Measured across the bed, perpendicular to length.",
+                        "Measured across the area, perpendicular to length.",
                     },
                     {
                       label: `Depth (${unitSet.depthUnit})`,
                       meaning:
-                        "Thickness of mulch to add. This is what converts area into volume.",
+                        "Thickness of topsoil to add. For lawn topdressing this is often a small number.",
                     },
                     {
                       label: "Waste %",
                       meaning:
-                        "Planning buffer for uneven grade, settling, and imperfect edges.",
+                        "Buffer for spillage, uneven grade, and areas you under-measured.",
                     },
                   ]}
                   formulas={[
@@ -636,19 +627,19 @@ export default function HowItWorksMulch() {
                     },
                   ]}
                   checks={[
-                    `If depth is entered in ${unitSet.depthUnit} but the selector is wrong, volume will be off by a big factor (12× when inches and feet are mixed).`,
-                    "If you are measuring a bed that curves slightly, rectangle is still a good estimate but use waste to cover the irregular edges.",
-                    "If your result is surprisingly small, verify you did not enter centimeters while the selector is meters (or inches while the selector is feet).",
+                    `If depth is entered in ${unitSet.depthUnit} but the selector is wrong, volume can be off by a large factor (12× when inches and feet are mixed).`,
+                    "If your job is a thin layer (topdressing), sanity-check by switching outputs between bulk units and bag counts. The number should still feel plausible.",
+                    "If the area is not truly rectangular, rectangle is still a useful estimate but add a realistic waste percent.",
                   ]}
                 />
 
                 <ShapeExplainer
                   unitSet={unitSet}
                   shape="square"
-                  title="Square"
-                  whenToUse="Use Square when the footprint is truly equal on all sides: square planters, square paver cutouts, or compact beds."
-                  diagramMeans={`The preview shows one side labeled Length, because a square uses the same side for both dimensions. The unit shown is ${unitSet.dimUnit}.`}
-                  whyMatters="Square reduces input effort and reduces mismatched sides, but it only works if the footprint is actually square. If one side is longer, use Rectangle."
+                  title={`Square`}
+                  whenToUse="Use Square for square planters, square raised bed interiors, and any footprint where both sides are equal."
+                  diagramMeans={`The preview shows one side labeled Length because a square uses the same side for both dimensions. Units shown are ${unitSet.dimUnit}.`}
+                  whyMatters="Square reduces input effort and reduces the chance of entering mismatched sides, but it only applies if the footprint is actually square."
                   inputs={[
                     {
                       label: `Side (${unitSet.dimUnit})`,
@@ -658,12 +649,12 @@ export default function HowItWorksMulch() {
                     {
                       label: `Depth (${unitSet.depthUnit})`,
                       meaning:
-                        "Mulch thickness. Doubling depth doubles volume.",
+                        "Topsoil thickness to add. Doubling depth doubles volume.",
                     },
                     {
                       label: "Waste %",
                       meaning:
-                        "Optional buffer. Useful when edges are not perfectly straight.",
+                        "Optional buffer. Useful when you are feathering soil edges or blending into existing grade.",
                     },
                   ]}
                   formulas={[
@@ -675,19 +666,19 @@ export default function HowItWorksMulch() {
                     },
                   ]}
                   checks={[
-                    "Do not use Square as a shortcut for rectangles. A small mismatch in sides can change area enough to affect bag counts.",
-                    "If you are matching a bulk quote, sanity-check with a second output unit (yd³ or m³) so the number “feels” right.",
-                    "If your square is actually a border around something, use a border shape instead so you subtract the cutout.",
+                    "If one side is even slightly longer, use Rectangle instead. A small mismatch can change bag counts.",
+                    "If you are filling to a specific height in a box, confirm you are measuring the inside footprint, not the outside footprint.",
+                    "If your square is a border around something, use a border shape so you subtract the cutout.",
                   ]}
                 />
 
                 <ShapeExplainer
                   unitSet={unitSet}
                   shape="circle"
-                  title="Circle"
-                  whenToUse="Use Circle for round beds, tree rings, circular planters, and anything measured from a central point."
-                  diagramMeans={`The preview labels Radius from the center to the edge. The unit on the diagram is ${unitSet.dimUnit}.`}
-                  whyMatters="Circle errors are expensive because radius is squared. If radius is doubled, area becomes 4×. The diagram is there to make “radius” unambiguous."
+                  title={`Circle`}
+                  whenToUse="Use Circle for round beds, tree rings, and circular planters when you can measure from the center."
+                  diagramMeans={`The preview labels Radius from the center to the edge. Diagram units are ${unitSet.dimUnit}.`}
+                  whyMatters="Radius is squared, so input mistakes are costly. This matters for topsoil because you may be ordering bulk and a 4× error is expensive."
                   inputs={[
                     {
                       label: `Radius (${unitSet.dimUnit})`,
@@ -697,12 +688,12 @@ export default function HowItWorksMulch() {
                     {
                       label: `Depth (${unitSet.depthUnit})`,
                       meaning:
-                        "Mulch thickness applied uniformly across the circle footprint.",
+                        "Topsoil thickness applied across the circle footprint.",
                     },
                     {
                       label: "Waste %",
                       meaning:
-                        "Optional buffer for roots, bumps, and irregular edging.",
+                        "Optional buffer for roots, bumps, and irregular edges.",
                     },
                   ]}
                   formulas={[
@@ -715,18 +706,18 @@ export default function HowItWorksMulch() {
                   ]}
                   checks={[
                     "If you measured diameter, divide by 2 before entering radius.",
-                    "If the circle is not perfect, measure two radii at right angles, average them, and add a small waste buffer.",
-                    "If the result is 4× too big, the most likely cause is diameter entered as radius.",
+                    "If the circle is not perfect, measure two radii at right angles and average them, then add a small waste buffer.",
+                    "If the output seems 4× too big, the most likely cause is diameter entered as radius.",
                   ]}
                 />
 
                 <ShapeExplainer
                   unitSet={unitSet}
                   shape="triangle"
-                  title="Triangle"
-                  whenToUse="Use Triangle for wedge-shaped corners, tapered beds, or any area where you can define one base and a perpendicular height."
-                  diagramMeans={`The preview shows Base along the bottom and Height as a straight up-and-down perpendicular measurement. Units shown are ${unitSet.dimUnit}.`}
-                  whyMatters="The most common triangle mistake is using a sloped edge as height. The calculator needs the perpendicular height because that is what the area formula uses."
+                  title={`Triangle`}
+                  whenToUse="Use Triangle for wedges, corners, and tapered areas where you can define a base and a perpendicular height."
+                  diagramMeans={`The preview shows Base and Height where height is perpendicular to base. Diagram units are ${unitSet.dimUnit}.`}
+                  whyMatters="For topsoil, triangles often show up when fixing a corner low spot or blending grade. Using a slanted side as height will overstate area and overstate volume."
                   inputs={[
                     {
                       label: `Base (${unitSet.dimUnit})`,
@@ -741,12 +732,12 @@ export default function HowItWorksMulch() {
                     {
                       label: `Depth (${unitSet.depthUnit})`,
                       meaning:
-                        "Mulch thickness applied across the triangle footprint.",
+                        "Topsoil thickness to add across the triangle footprint.",
                     },
                     {
                       label: "Waste %",
                       meaning:
-                        "Optional buffer for irregular edges or measurement uncertainty.",
+                        "Optional buffer for irregular edges and measurement uncertainty.",
                     },
                   ]}
                   formulas={[
@@ -758,19 +749,19 @@ export default function HowItWorksMulch() {
                     },
                   ]}
                   checks={[
-                    "If you only have the three side lengths and no perpendicular height, triangle is harder to measure accurately. Use a right-angle measurement if possible.",
-                    "If the triangle is part of a larger bed, consider splitting the job into a rectangle plus a triangle to reduce error.",
-                    "If you used the slanted side as height, your area is overstated.",
+                    "Height must be perpendicular. If you use a sloped edge, you inflate area.",
+                    "If the triangle is part of a larger job, split it into a rectangle plus a triangle for cleaner measurements.",
+                    "If you only know side lengths, measure a perpendicular height in the real world instead of guessing.",
                   ]}
                 />
 
                 <ShapeExplainer
                   unitSet={unitSet}
                   shape="rectangle_border"
-                  title="Rectangle border"
-                  whenToUse="Use Rectangle border when you mulch around a rectangular cutout: around a patio, around a shed pad, or around a rectangular feature you are not covering."
-                  diagramMeans={`The preview shows an outer rectangle and an inner rectangle. The mulch footprint is the difference: outer minus inner. Diagram units are ${unitSet.dimUnit}.`}
-                  whyMatters="Border shapes prevent overbuy. People often measure the outside footprint and forget to subtract what they are not mulching. This shape forces the subtraction."
+                  title={`Rectangle border`}
+                  whenToUse="Use Rectangle border when you are adding topsoil around a rectangular area you are not covering: around a patio, around a shed pad, or around a concrete slab."
+                  diagramMeans={`The preview shows an outer rectangle and an inner rectangle cutout. The topsoil footprint is outer minus inner. Diagram units are ${unitSet.dimUnit}.`}
+                  whyMatters="Border shapes prevent systematic overbuy. For topsoil, this matters because you may be ordering bulk and extra yards add up quickly."
                   inputs={[
                     {
                       label: `Outer length (${unitSet.dimUnit})`,
@@ -782,16 +773,21 @@ export default function HowItWorksMulch() {
                     },
                     {
                       label: `Inner length (${unitSet.dimUnit})`,
-                      meaning: "Cutout length you will not cover with mulch.",
+                      meaning: "Cutout length you will not cover with topsoil.",
                     },
                     {
                       label: `Inner width (${unitSet.dimUnit})`,
-                      meaning: "Cutout width you will not cover with mulch.",
+                      meaning: "Cutout width you will not cover with topsoil.",
                     },
                     {
                       label: `Depth (${unitSet.depthUnit})`,
                       meaning:
-                        "Mulch thickness applied only to the border area.",
+                        "Topsoil thickness applied only to the border area.",
+                    },
+                    {
+                      label: "Waste %",
+                      meaning:
+                        "Optional buffer for feathering soil edges and blending transitions.",
                     },
                   ]}
                   formulas={[
@@ -805,21 +801,25 @@ export default function HowItWorksMulch() {
                     },
                     { label: "Border area", formula: "A = Aout - Ain" },
                     { label: "Volume", formula: "V = A × depth" },
+                    {
+                      label: "Waste volume",
+                      formula: "Vw = V × (1 + waste% ÷ 100)",
+                    },
                   ]}
                   checks={[
-                    "Inner dimensions must be smaller than outer dimensions. If not, the cutout is invalid or swapped.",
-                    "Cutout position does not matter for area, only the cutout size matters.",
-                    "If you have multiple cutouts, compute them separately and subtract, or add waste conservatively.",
+                    "Inner dimensions must be smaller than outer dimensions. If not, swap them or re-measure.",
+                    "Cutout position does not matter for area, only cutout size matters.",
+                    "If you have multiple cutouts, compute them separately and subtract (or add waste conservatively).",
                   ]}
                 />
 
                 <ShapeExplainer
                   unitSet={unitSet}
                   shape="circle_border"
-                  title="Circle border (ring)"
-                  whenToUse="Use Circle border for donut shapes: tree rings, circular beds around a fountain, or any area between an outer edge and an inner edge."
-                  diagramMeans={`The preview shows outer radius and inner radius. The mulched footprint is πRout² - πRin². Diagram units are ${unitSet.dimUnit}.`}
-                  whyMatters="Circle borders are one of the easiest places to swap inner and outer values. The diagram makes the relationship obvious, and the math is sensitive because radii are squared."
+                  title={`Circle border (ring)`}
+                  whenToUse="Use Circle border for ring-shaped areas: around a tree trunk, around a circular patio, or any donut-shaped footprint."
+                  diagramMeans={`The preview shows outer radius and inner radius. The footprint is πRout² - πRin². Diagram units are ${unitSet.dimUnit}.`}
+                  whyMatters="Swapping inner and outer values is common. For topsoil, the squared radii make the difference between a small ring and a surprisingly large order."
                   inputs={[
                     {
                       label: `Outer radius (${unitSet.dimUnit})`,
@@ -831,7 +831,12 @@ export default function HowItWorksMulch() {
                     },
                     {
                       label: `Depth (${unitSet.depthUnit})`,
-                      meaning: "Mulch thickness applied to the ring only.",
+                      meaning: "Topsoil thickness applied to the ring only.",
+                    },
+                    {
+                      label: "Waste %",
+                      meaning:
+                        "Optional buffer for uneven edges or soil that spreads beyond the ring.",
                     },
                   ]}
                   formulas={[
@@ -839,21 +844,25 @@ export default function HowItWorksMulch() {
                     { label: "Inner area", formula: "Ain = π × Rin²" },
                     { label: "Ring area", formula: "A = Aout - Ain" },
                     { label: "Volume", formula: "V = A × depth" },
+                    {
+                      label: "Waste volume",
+                      formula: "Vw = V × (1 + waste% ÷ 100)",
+                    },
                   ]}
                   checks={[
-                    "Inner radius must be smaller than outer radius. If it is not, swap them or re-measure.",
-                    "If you measured inner/outer diameters, divide by 2 before input.",
-                    "If the ring is thin, small measurement error can matter. Use a modest waste buffer.",
+                    "Inner radius must be smaller than outer radius. If not, swap them or re-measure.",
+                    "If you measured diameters, divide by 2 before input.",
+                    "Thin rings are sensitive to measurement error. Use a modest waste buffer if you are estimating by eye.",
                   ]}
                 />
 
                 <ShapeExplainer
                   unitSet={unitSet}
                   shape="triangle_border"
-                  title="Triangle border"
-                  whenToUse="Use Triangle border when you are mulching around a triangular cutout or you have a triangular perimeter zone that excludes a similar inner triangle."
-                  diagramMeans={`The preview shows outer base/height and inner base/height. The mulch footprint is outer triangle area minus inner triangle area. Units shown are ${unitSet.dimUnit}.`}
-                  whyMatters="Triangle borders show up in corners and hardscape transitions. Subtracting the inner triangle prevents a systematic overbuy that is hard to notice until you compare to what was actually installed."
+                  title={`Triangle border`}
+                  whenToUse="Use Triangle border when you are adding topsoil in a triangular perimeter zone that excludes a smaller triangular cutout."
+                  diagramMeans={`The preview shows an outer triangle (base/height) and an inner triangle cutout (base/height). The footprint is outer area minus inner area. Diagram units are ${unitSet.dimUnit}.`}
+                  whyMatters="This is common near hardscape corners and transitions. Subtracting the inner triangle prevents overbuy and keeps estimates aligned with what you will actually spread."
                   inputs={[
                     {
                       label: `Outer base (${unitSet.dimUnit})`,
@@ -875,7 +884,12 @@ export default function HowItWorksMulch() {
                     {
                       label: `Depth (${unitSet.depthUnit})`,
                       meaning:
-                        "Mulch thickness applied to the border area only.",
+                        "Topsoil thickness applied to the border area only.",
+                    },
+                    {
+                      label: "Waste %",
+                      meaning:
+                        "Optional buffer for irregular edges and blending into surrounding grade.",
                     },
                   ]}
                   formulas={[
@@ -889,11 +903,15 @@ export default function HowItWorksMulch() {
                     },
                     { label: "Border area", formula: "A = Aout - Ain" },
                     { label: "Volume", formula: "V = A × depth" },
+                    {
+                      label: "Waste volume",
+                      formula: "Vw = V × (1 + waste% ÷ 100)",
+                    },
                   ]}
                   checks={[
                     "For both triangles, height must be perpendicular. Using a slanted side inflates area.",
-                    "Inner values must be smaller than outer values, otherwise the subtraction becomes negative.",
-                    "If the inner cutout is not similar to the outer triangle, this still approximates well but increase waste slightly.",
+                    "Inner values must be smaller than outer values, otherwise subtraction becomes negative.",
+                    "If the inner cutout is not similar to the outer triangle, the estimate is still useful, but increase waste slightly.",
                   ]}
                 />
               </div>
@@ -910,43 +928,50 @@ export default function HowItWorksMulch() {
 
               <div className="relative">
                 <div className="text-sm font-semibold text-sky-300">
-                  Utility note
+                  Practical note
                 </div>
                 <h3 className="mt-2 text-xl sm:text-2xl font-extrabold tracking-tight text-sky-300">
-                  Estimates are planning outputs
+                  Topsoil is not a precision pour
                 </h3>
                 <p className="mt-3 text-slate-200 leading-7">
-                  This tool uses standard geometry plus your chosen depth and
-                  optional waste buffer. It does not model compaction, settling
-                  over time, slope correction, drainage layers, or product
-                  density differences. For buying, confirm depth guidance for
-                  your project and use a realistic waste percent if your bed
-                  edges are irregular or your shape is an approximation.
+                  The output is a planning estimate based on footprint geometry,
+                  your chosen depth, and an optional waste buffer. Real jobs
+                  vary because you feather edges, fill low spots deeper than
+                  your “average depth,” and lose some soil to spillage and
+                  raking. If your project is leveling or regrading, increase
+                  waste to reflect the uncertainty, and prefer bulk units (yd³
+                  or m³) so you have enough on hand.
                 </p>
 
                 <div className="mt-4">
                   <Expandable
-                    title="Final notes (depth, compaction, and buying strategy)"
-                    subtitle="For users comparing contractor quotes, bulk delivery, and bagged mulch."
+                    title="Buying strategy (bulk vs bags) and depth guidance"
+                    subtitle="Open if you are deciding how to purchase and how to choose depth."
                   >
                     <ul className="list-disc pl-5 space-y-2">
                       <li>
-                        If you are topping up existing mulch, enter the depth
-                        you intend to add, not the total depth already present.
+                        Thin lawn topdressing layers are often fractions of an
+                        inch or a few centimeters. Double-check the depth unit
+                        selector before trusting the result.
                       </li>
                       <li>
-                        A “3 inch” layer often settles. If you need an effective
-                        3 inches after settling, plan slightly higher or add a
-                        small waste buffer.
+                        If you are filling depressions or leveling, an “average
+                        depth” can understate what you need. Add waste or split
+                        the job into sections with different depths.
                       </li>
                       <li>
-                        Bagged mulch is sold by volume (often ft³) but may fluff
-                        differently by brand. Use the rounded-up bag count, not
-                        the exact decimal.
+                        Bags are convenient for small jobs and tight access, but
+                        they are usually priced higher per volume. Use ft³ or
+                        liters outputs to match bag labeling and round up.
                       </li>
                       <li>
-                        Bulk is typically yd³ or m³. Use the same unit as the
-                        quote before comparing prices.
+                        Bulk is typically sold in yd³ or m³. Use the same unit
+                        as your supplier quote before comparing prices.
+                      </li>
+                      <li>
+                        If you are blending into existing soil, you may spread a
+                        little wider than your measured footprint. That is what
+                        waste percent is for.
                       </li>
                     </ul>
                   </Expandable>

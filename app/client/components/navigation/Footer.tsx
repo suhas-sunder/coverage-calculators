@@ -15,7 +15,7 @@ export default function Footer() {
 
   const categories: ToolCategory[] = [
     {
-      title: "Explore coverage tools",
+      title: "All tools",
       cardClassName: "lg:col-span-2",
       listClassName: "grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-1",
       items: [
@@ -27,6 +27,40 @@ export default function Footer() {
           label: "Mulch Coverage Calculator",
           to: "/mulch-coverage-calculator",
         },
+        {
+          label: "Gravel Coverage Calculator",
+          to: "/gravel-coverage-calculator",
+        },
+        {
+          label: "Topsoil Coverage Calculator",
+          to: "/topsoil-coverage-calculator",
+        },
+      ],
+    },
+    {
+      title: "Landscaping materials",
+      items: [
+        {
+          label: "Mulch Coverage Calculator",
+          to: "/mulch-coverage-calculator",
+        },
+        {
+          label: "Gravel Coverage Calculator",
+          to: "/gravel-coverage-calculator",
+        },
+        {
+          label: "Topsoil Coverage Calculator",
+          to: "/topsoil-coverage-calculator",
+        },
+      ],
+    },
+    {
+      title: "Paint projects",
+      items: [
+        {
+          label: "Paint Coverage Calculator",
+          to: "/paint-coverage-calculator",
+        },
       ],
     },
   ];
@@ -34,6 +68,9 @@ export default function Footer() {
   return (
     <footer className="bg-sky-950 text-slate-300">
       <div className="mx-auto max-w-6xl px-4 py-10">
+        {/* Jump target for navbar: /#all-tools */}
+        <div id="all-tools" className="scroll-mt-24" />
+
         <div className="rounded-2xl border border-sky-900/60 bg-sky-950/30 p-6">
           <div className="flex items-start justify-between gap-3">
             <h2 className="text-base font-bold text-white">
@@ -43,6 +80,11 @@ export default function Footer() {
               Coverage and area calculators
             </span>
           </div>
+
+          <p className="mt-2 text-sm text-slate-400/90 max-w-3xl">
+            Browse all available calculators to estimate coverage and material
+            quantities using real measurements.
+          </p>
 
           {/* Cap at 3 columns so cards stay wide and readable */}
           <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
