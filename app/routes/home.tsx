@@ -4,65 +4,23 @@ import HowItWorks from "~/client/components/home/HowItWorks";
 import FAQ from "~/client/components/home/FAQ";
 import ToolFit from "~/client/components/home/ToolFit";
 import Rounding from "~/client/components/home/Rounding";
+import HomeOverview from "~/client/components/home/HomeOverview";
+import { pageMeta, serializeJsonLd } from "~/lib/seo";
+import {
+  CalculatorAfterUtility,
+  CalculatorAllToolsAd,
+  CalculatorSeoContentAd,
+  CalculatorTopBanner,
+} from "~/client/components/advertising/CalculatorAdPlacements";
+import { CalculatorByline } from "~/client/components/site/CalculatorTrust";
 
-export const meta: Route.MetaFunction = () => [
-  {
-    title:
-      "How Much Do I Need? Coverage Calculator for Paint, Mulch, Gravel, Soil + Area Converter",
-  },
-  {
-    name: "description",
-    content:
-      "Need to know how much paint, mulch, soil, gravel, or concrete to buy? Convert area (ft², m², yd², acres) and estimate quantity using a coverage rate, coats, and waste.",
-  },
-  {
-    name: "keywords",
-    content:
-      "coverage calculator, how much paint do I need, paint coverage calculator, mulch calculator, gravel calculator, soil calculator, concrete calculator, area converter, square feet to square meters, square meters to square feet, acres to square feet, hectares to square meters, coats calculator, waste percentage",
-  },
-  { name: "robots", content: "index,follow" },
-  { name: "author", content: "coveragecalculators.com" },
-  { name: "theme-color", content: "#f8fafc" },
-
-  { property: "og:type", content: "website" },
-  {
-    property: "og:title",
-    content:
-      "How Much Do I Need? Coverage Calculator (Paint, Mulch, Gravel, Soil) + Area Converter",
-  },
-  {
-    property: "og:description",
-    content:
-      "Convert area units and estimate how much material to buy using a coverage rate. Includes coats and waste for planning paint and bulk projects.",
-  },
-  { property: "og:url", content: "https://www.coveragecalculators.com" },
-  { property: "og:site_name", content: "coveragecalculators.com" },
-  {
-    property: "og:image",
-    content: "https://www.coveragecalculators.com/og-image.jpg",
-  },
-
-  { name: "twitter:card", content: "summary_large_image" },
-  {
-    name: "twitter:title",
-    content: "How Much Do I Need? Coverage Calculator + Area Converter",
-  },
-  {
-    name: "twitter:description",
-    content:
-      "Estimate paint, mulch, soil, gravel, or concrete from a coverage rate. Converts ft², m², yd², acres, and more. Includes coats and waste.",
-  },
-  {
-    name: "twitter:image",
-    content: "https://www.coveragecalculators.com/og-image.jpg",
-  },
-
-  {
-    tagName: "link",
-    rel: "canonical",
-    href: "https://www.coveragecalculators.com",
-  },
-];
+export const meta: Route.MetaFunction = () =>
+  pageMeta({
+    title: "Material Coverage and Quantity Calculators",
+    description:
+      "Convert area units and estimate paint, mulch, gravel, topsoil, compost, volume, weight, packages, and cost from project inputs.",
+    path: "/",
+  });
 
 type Period = "sqft" | "sqm" | "sqyd" | "acre" | "hectare" | "sqin" | "sqcm";
 
@@ -1312,8 +1270,15 @@ export default function Home() {
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    name: "coveragecalculators.com",
+    name: "Coverage Calculators",
     url: "https://www.coveragecalculators.com",
+    description:
+      "Practical estimation tools for material coverage, quantity, area, volume, weight, package counts, and project planning.",
+    creator: {
+      "@type": "Person",
+      name: "Suhas Sunder",
+      url: "https://www.coveragecalculators.com/about",
+    },
   };
 
   const webPageSchema = {
@@ -1353,7 +1318,7 @@ export default function Home() {
         <div className="rounded-2xl bg-white sm:shadow-sm sm:border border-slate-200 sm:px-8">
           <div className="flex flex-col pt-2 sm:pt-4 pb-1 sm:flex-row sm:items-center sm:justify-between gap-4">
             <h1 className="mb-1 text-center sm:text-left text-2xl sm:text-3xl md:text-4xl capitalize font-bold text-sky-800 tracking-tight">
-              Coverage Calculator
+              Material Coverage and Quantity Calculators
             </h1>
 
             <div
@@ -1379,6 +1344,8 @@ export default function Home() {
             Convert area units and estimate material needs using a coverage rate
             (paint, mulch, soil, gravel, concrete) with coats and waste.
           </p>
+
+          <CalculatorTopBanner />
 
           <p id={decimalsHelpId} className="sr-only">
             Controls how many decimals to show when rounding is enabled.
@@ -2158,17 +2125,22 @@ export default function Home() {
         </div>
       </section>
 
+      <CalculatorAfterUtility />
+      <HomeOverview />
+      <CalculatorAllToolsAd />
       <HowItWorks />
+      <CalculatorSeoContentAd />
       <ToolFit />
       <FAQ />
+      <CalculatorByline />
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageSchema) }}
       />
     </main>
   );

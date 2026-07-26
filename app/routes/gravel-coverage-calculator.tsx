@@ -5,6 +5,14 @@ import Assumptions from "~/client/components/gravel-coverage-calculator/Assumpti
 import HowItWorks from "~/client/components/gravel-coverage-calculator/HowItWorks";
 import ToolFit from "~/client/components/gravel-coverage-calculator/ToolFit";
 import FAQ from "~/client/components/gravel-coverage-calculator/FAQ";
+import {
+  CalculatorAfterUtility,
+  CalculatorAllToolsAd,
+  CalculatorSeoContentAd,
+  CalculatorTopBanner,
+} from "~/client/components/advertising/CalculatorAdPlacements";
+import { CalculatorByline } from "~/client/components/site/CalculatorTrust";
+import { serializeJsonLd } from "~/lib/seo";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Gravel Coverage Calculator: Bags, Cubic Yards, or Tons Needed" },
@@ -19,7 +27,7 @@ export const meta: Route.MetaFunction = () => [
       "gravel calculator, gravel coverage calculator, how much gravel do i need, gravel driveway calculator, crushed stone calculator, cubic yards gravel, tons of gravel, gravel bags estimate",
   },
   { name: "robots", content: "index,follow" },
-  { name: "author", content: "coveragecalculators.com" },
+  { name: "author", content: "Suhas Sunder" },
   { name: "theme-color", content: "#f8fafc" },
   { property: "og:type", content: "website" },
   {
@@ -36,10 +44,6 @@ export const meta: Route.MetaFunction = () => [
     content: "https://www.coveragecalculators.com/gravel-coverage-calculator",
   },
   { property: "og:site_name", content: "coveragecalculators.com" },
-  {
-    property: "og:image",
-    content: "https://www.coveragecalculators.com/og-image.jpg",
-  },
   { name: "twitter:card", content: "summary_large_image" },
   {
     name: "twitter:title",
@@ -49,10 +53,6 @@ export const meta: Route.MetaFunction = () => [
     name: "twitter:description",
     content:
       "Calculate gravel needed from shape dimensions, depth, and density. Includes optional waste and pricing.",
-  },
-  {
-    name: "twitter:image",
-    content: "https://www.coveragecalculators.com/og-image.jpg",
   },
   {
     tagName: "link",
@@ -1825,6 +1825,8 @@ export default function GravelCoverageCalculator() {
             weight-based pricing or bag counts.
           </p>
 
+          <CalculatorTopBanner />
+
           <div className="flex w-full mt-1">
             <div className="flex flex-col w-full">
               <div className="grid gap-3 w-full sm:grid-cols-3">
@@ -2871,6 +2873,8 @@ export default function GravelCoverageCalculator() {
           </div>
         </div>
 
+        <CalculatorAfterUtility />
+        <CalculatorAllToolsAd />
         <div className="mt-8">
           <ToolFit />
         </div>
@@ -2878,6 +2882,8 @@ export default function GravelCoverageCalculator() {
         <div className="mt-8">
           <HowItWorks />
         </div>
+
+        <CalculatorSeoContentAd />
 
         <div className="mt-8">
           <Assumptions />
@@ -2888,13 +2894,15 @@ export default function GravelCoverageCalculator() {
         </div>
       </section>
 
+      <CalculatorByline />
+
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageSchema) }}
       />
     </main>
   );

@@ -1,3 +1,5 @@
+import { serializeJsonLd } from "~/lib/seo";
+
 export default function FAQ() {
   const faqData = [
     {
@@ -75,7 +77,7 @@ export default function FAQ() {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(faqSchema) }}
       />
     </section>
   );

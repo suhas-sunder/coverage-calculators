@@ -5,13 +5,17 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-  redirect, // ⟵ add this
+  redirect,
+  Link,
+  useLocation,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
 import NavBar from "./client/components/navigation/NavBar";
 import Footer from "./client/components/navigation/Footer";
+import { CalculatorAdLayout } from "./client/components/advertising/AdSlot";
+import { CALCULATORS } from "./lib/site";
 
 /* ---------- Trailing slash helpers (one place, app-level) ---------- */
 function needsStrip(pathname: string) {
@@ -58,18 +62,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-          <NavBar />
-          {children}
-          <ScrollRestoration />
-          <Scripts />
-          <Footer />
+        <NavBar />
+        {children}
+        <Footer />
+        <ScrollRestoration />
+        <Scripts />
       </body>
     </html>
   );
 }
 
 export default function App() {
-  return <Outlet />;
+  const location = useLocation();
+  const calculatorPaths = new Set(CALCULATORS.map((calculator) => calculator.path));
+  const outlet = <Outlet />;
+  return calculatorPaths.has(location.pathname) ? (
+    <CalculatorAdLayout>{outlet}</CalculatorAdLayout>
+  ) : (
+    outlet
+  );
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
@@ -89,14 +100,22 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <main className="mx-auto min-h-[55vh] max-w-4xl px-5 py-16 text-slate-700">
+      <div className="rounded-2xl border border-slate-200 bg-white p-8 shadow-sm">
+      <h1 className="text-4xl font-bold text-sky-900">{message}</h1>
+      <p className="mt-3 text-lg text-slate-600">{details}</p>
+      {isRouteErrorResponse(error) && error.status === 404 ? (
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Link to="/" className="rounded-xl bg-sky-700 px-4 py-2.5 font-semibold text-white hover:bg-sky-800">Home</Link>
+          <Link to="/calculators" className="rounded-xl border border-slate-300 px-4 py-2.5 font-semibold text-sky-900 hover:bg-slate-50">All Calculators</Link>
+        </div>
+      ) : null}
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="mt-6 w-full overflow-x-auto rounded-lg bg-slate-950 p-4 text-slate-100">
           <code>{stack}</code>
         </pre>
       )}
+      </div>
     </main>
   );
 }

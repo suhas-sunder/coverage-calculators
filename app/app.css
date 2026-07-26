@@ -1,15 +1,76 @@
 @import "tailwindcss";
-/* 
-@theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-} */
 
-html,
-body {
-  /* @apply bg-white dark:bg-gray-950;
+:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 3px;
+}
 
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  } */
+.content-page-body h3 {
+  color: #0f172a;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.content-page-body ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+
+.content-page-body a {
+  color: #075985;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.ad-slot {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin: 1.25rem auto;
+  max-width: 100%;
+}
+
+.ad-slot__placeholder {
+  align-items: center;
+  align-self: stretch;
+  border: 1px dashed #cbd5e1;
+  border-radius: 0.75rem;
+  color: #64748b;
+  display: flex;
+  font-size: 0.75rem;
+  justify-content: center;
+  letter-spacing: 0.04em;
+  min-height: 4.5rem;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.ad-slot--desktop,
+.calculator-ad-layout__rail {
+  display: none;
+}
+
+.calculator-ad-layout {
+  margin-inline: auto;
+  max-width: 1152px;
+}
+
+@media (min-width: 1800px) {
+  .calculator-ad-layout {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: 300px minmax(0, 1152px) 300px;
+    max-width: 1800px;
+  }
+
+  .calculator-ad-layout__rail {
+    display: block;
+    padding-top: 8rem;
+  }
+
+  .calculator-ad-layout__rail .ad-slot--desktop {
+    display: flex;
+    margin-top: 0;
+  }
 }

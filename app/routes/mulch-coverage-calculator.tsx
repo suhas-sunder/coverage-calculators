@@ -5,6 +5,14 @@ import Assumptions from "~/client/components/mulch-coverage-calculator/Assumptio
 import HowItWorks from "~/client/components/mulch-coverage-calculator/HowItWorks";
 import ToolFit from "~/client/components/mulch-coverage-calculator/ToolFit";
 import FAQ from "~/client/components/mulch-coverage-calculator/FAQ";
+import {
+  CalculatorAfterUtility,
+  CalculatorAllToolsAd,
+  CalculatorSeoContentAd,
+  CalculatorTopBanner,
+} from "~/client/components/advertising/CalculatorAdPlacements";
+import { CalculatorByline } from "~/client/components/site/CalculatorTrust";
+import { serializeJsonLd } from "~/lib/seo";
 
 export const meta: Route.MetaFunction = () => [
   { title: "Mulch Coverage Calculator: Bags or Cubic Yards Needed" },
@@ -19,7 +27,7 @@ export const meta: Route.MetaFunction = () => [
       "mulch calculator, mulch coverage calculator, how much mulch do i need, cubic yards mulch, mulch bags estimate, ring bed calculator",
   },
   { name: "robots", content: "index,follow" },
-  { name: "author", content: "coveragecalculators.com" },
+  { name: "author", content: "Suhas Sunder" },
   { name: "theme-color", content: "#f8fafc" },
 
   { property: "og:type", content: "website" },
@@ -37,10 +45,6 @@ export const meta: Route.MetaFunction = () => [
     content: "https://www.coveragecalculators.com/mulch-coverage-calculator",
   },
   { property: "og:site_name", content: "coveragecalculators.com" },
-  {
-    property: "og:image",
-    content: "https://www.coveragecalculators.com/og-image.jpg",
-  },
 
   { name: "twitter:card", content: "summary_large_image" },
   {
@@ -51,10 +55,6 @@ export const meta: Route.MetaFunction = () => [
     name: "twitter:description",
     content:
       "Calculate mulch needed from shape dimensions and depth. Includes optional waste and pricing.",
-  },
-  {
-    name: "twitter:image",
-    content: "https://www.coveragecalculators.com/og-image.jpg",
   },
 
   {
@@ -1356,6 +1356,8 @@ export default function MulchCoverageCalculator() {
             and optional bag counts.
           </p>
 
+          <CalculatorTopBanner />
+
           <div className="flex w-full mt-1">
             <div className="flex flex-col w-full">
               <div className="grid gap-3 w-full sm:grid-cols-3">
@@ -2126,17 +2128,21 @@ export default function MulchCoverageCalculator() {
         </div>
       </section>
 
+      <CalculatorAfterUtility />
       <Assumptions />
       <HowItWorks />
+      <CalculatorSeoContentAd />
+      <CalculatorAllToolsAd />
       <ToolFit />
       <FAQ />
+      <CalculatorByline />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(websiteSchema) }}
       />
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webPageSchema) }}
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(webPageSchema) }}
       />
     </main>
   );

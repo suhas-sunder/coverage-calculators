@@ -13,8 +13,19 @@ export default [
   ),
   route("compost-coverage-calculator", "routes/compost-coverage-calculator.tsx"),
 
+  // Directory and trust pages
+  route("calculators", "routes/calculators.tsx"),
+  route("about", "routes/about.tsx"),
+  route("methodology", "routes/methodology.tsx"),
+  route("editorial-policy", "routes/editorial-policy.tsx"),
+  route("corrections-policy", "routes/corrections-policy.tsx"),
+  route("disclaimer", "routes/disclaimer.tsx"),
+  route("accessibility", "routes/accessibility.tsx"),
+  route("sitemap", "routes/sitemap.tsx"),
+
   // Legal / misc
   route("terms-of-service", "routes/terms-of-service.tsx"),
+  route("terms", "routes/terms.tsx"),
   route("privacy-policy", "routes/privacy-policy.tsx"),
   route("cookies", "routes/cookies.tsx"),
   route("contact", "routes/contact.tsx"),

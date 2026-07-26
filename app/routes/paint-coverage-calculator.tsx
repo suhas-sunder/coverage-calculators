@@ -4,6 +4,13 @@ import HowItWorks from "~/client/components/paint-coverage-calculator/HowItWorks
 import ToolFit from "~/client/components/paint-coverage-calculator/ToolFit";
 import FAQ from "~/client/components/paint-coverage-calculator/FAQ";
 import Rounding from "~/client/components/home/Rounding";
+import {
+  CalculatorAfterUtility,
+  CalculatorAllToolsAd,
+  CalculatorSeoContentAd,
+  CalculatorTopBanner,
+} from "~/client/components/advertising/CalculatorAdPlacements";
+import { CalculatorByline } from "~/client/components/site/CalculatorTrust";
 
 export const meta: Route.MetaFunction = () => [
   {
@@ -21,6 +28,7 @@ export const meta: Route.MetaFunction = () => [
       "paint coverage calculator, paint calculator, how much paint do I need, gallons of paint, liters of paint, wall paint calculator, room paint calculator, ceiling paint calculator, fence paint calculator, siding paint calculator, spreading rate, m2 per liter, ft2 per gallon, coats",
   },
   { name: "robots", content: "index,follow" },
+  { name: "author", content: "Suhas Sunder" },
   { property: "og:type", content: "website" },
   {
     property: "og:title",
@@ -1545,6 +1553,8 @@ export default function PaintCoverageCalculator() {
             per coat and total coats.
           </p>
 
+          <CalculatorTopBanner />
+
           <div className="mt-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-4">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <div className="flex flex-wrap gap-2">
@@ -2626,9 +2636,13 @@ export default function PaintCoverageCalculator() {
         </div>
       </section>
 
+      <CalculatorAfterUtility />
       <HowItWorks />
+      <CalculatorSeoContentAd />
+      <CalculatorAllToolsAd />
       <ToolFit />
       <FAQ />
+      <CalculatorByline />
     </main>
   );
 }
